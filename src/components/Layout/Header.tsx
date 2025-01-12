@@ -52,7 +52,7 @@ export default function Navbar() {
                 isMenuOpen && (
                     <AnimatePresence mode="wait">
                         <motion.div
-                            key={isMenuOpen}
+                            key={`${isMenuOpen}-hii`}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0.8, x: -20 }}
