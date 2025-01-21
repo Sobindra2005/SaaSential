@@ -48,9 +48,9 @@ const Signup: React.FC = () => {
 
             <h2 className="text-4xl font-bold mb-8 text-center text-secondary">Create Your Account</h2>
             <form onSubmit={handleSubmit(handleSignup)} className="w-full max-w-md bg-primary p-8 rounded-lg shadow-md">
-                <Input label="Email" type="email" id="email" register={register} required />
-                <Input label="Password" type="password" id="password" register={register} required />
-                <Input label="Confirm Password" type="password" id="confirmPassword" register={register} required />
+                <Input placeholder='eg:example@gmail.com' label="Email" type="email" id="email" register={register} required />
+                <Input placeholder='eg:Example#42$56' label="Password" type="password" id="password" register={register} required />
+                <Input placeholder='eg:Example#42$56' label="Confirm Password" type="password" id="confirmPassword" register={register} required />
                 <Button type="primary" className="w-full py-2">Sign Up</Button>
             </form>
 

@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import Container from '@/components/Layout/Container';
 import Button from '@/components/Common/Buttons';
 import Input from '@/components/Common/Input';
+import { IoPeople } from 'react-icons/io5';
 
 const schema = z.object({
     email: z.string().email({ message: "Invalid email address" }),
@@ -30,9 +31,9 @@ const Login: React.FC = () => {
         <Container className="flex flex-col items-center justify-center min-h-screen py-2">
             <h2 className="text-4xl font-bold mb-8 text-center text-secondary">Login to Your Account</h2>
             <form onSubmit={handleSubmit(handleLogin)} className="w-full max-w-md bg-primary p-8 rounded-lg shadow-md">
-                <Input label="Email" type="email" id="email" register={register} required />
+                <Input placeholder='eg: example@gmail.com' label="Email" type="email" id="email" register={register} required />
                 {errors.email && <p className="text-red-500">{errors.email.message}</p>}
-                <Input label="Password" type="password" id="password" register={register} required />
+                <Input placeholder='eg: example@726$Rfs' label="Password" type="password" id="password" register={register} required />
                 {errors.password && <p className="text-red-500">{errors.password.message}</p>}
                 <Button type="primary" className="w-full py-2">Login</Button>
             </form>
@@ -45,7 +46,7 @@ const Login: React.FC = () => {
                     </a>
                 </p>
             </div>
-
+            <Button onClick={() => router.push("/home")} type="tertiary" className="w-fit py-2 mt-5 flex items-center gap-2 "><IoPeople size={22} />{"Login as Guest"} </Button>
         </Container>
     );
 };

@@ -4,6 +4,7 @@ import Button from '../Common/Buttons';
 import { motion } from 'framer-motion';
 import Container from './Container';
 import LandingDiv from '../ui/landingDiv';
+import Link from 'next/link';
 
 
 export default function HeroSection() {
@@ -21,7 +22,7 @@ export default function HeroSection() {
                     className='mt-[13rem]'
                 > <h1 className="text-6xl font-bold mb-4 text-secondary text-center ">All-in-One Website Builder for <br /> Teams and Creators.</h1></motion.div>
                 <motion.div
-                    initial={{ opacity: 0}}
+                    initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{
                         delay: 0.3,
@@ -29,7 +30,7 @@ export default function HeroSection() {
                         ease: "easeInOut"
                     }}
                     className="flex space-x-4  mt-4">
-                    <Button type="tertiary">Get Started</Button>
+                    <Link href={"/home"}> <Button type="tertiary">Get Started</Button></Link>
                 </motion.div>
 
                 <motion.div

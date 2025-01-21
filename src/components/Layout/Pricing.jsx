@@ -58,13 +58,13 @@ const Pricing = () => {
                     },
 
                 ].map((plan, index) => (
-                    <div key={`index-${plan.planName}`}><PricingCard
-                        index={index}
+                   <PricingCard
+                        key={`${index}-card`}
                         planName={plan.planName}
                         price={plan.price}
                         features={plan.features}
                         isPopular={plan.isPopular}
-                    /></div>
+                    />
                 ))}
             </div>
         </Container>

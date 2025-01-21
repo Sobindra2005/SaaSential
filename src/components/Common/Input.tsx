@@ -7,16 +7,18 @@ interface InputProps {
     id: string;
     register: UseFormRegister<any>;
     required?: boolean;
+    placeholder: string,
 }
 
-const Input: React.FC<InputProps> = ({ label, type, id, register, required = false }) => {
+const Input: React.FC<InputProps> = ({ label, type, id, register, required = false, placeholder }) => {
     return (
         <div className="mb-6">
-            <label htmlFor={id} className="block text-gray-300 mb-2">{label}</label>
+            <label htmlFor={id} className="block text-gray-100 mb-2">{label}</label>
             <input
                 type={type}
                 id={id}
                 {...register(id)}
+                placeholder={placeholder}
                 className="w-full p-2 border border-gray-700 focus:border-secondary hover:border-secondary rounded bg-transparent text-gray-400  outline-none "
                 required={required}
             />
