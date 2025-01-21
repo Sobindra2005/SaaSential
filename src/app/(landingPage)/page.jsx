@@ -3,6 +3,7 @@ import Header from "../../components/Layout/Header";
 import HeroSection from "../../components/Layout/HeroSection";
 import TrustedByAll from "../../components/Layout/TrustedByAll";
 import Pricing from "../../components/Layout/Pricing";
+import Footer from "../../components/Footer";
 
 export default function LandingPage() {
     return (
@@ -24,7 +25,7 @@ export default function LandingPage() {
                 <Pricing />
             </section>
             <footer>
-
+                <Footer />
             </footer>
         </main>
     );

@@ -7,8 +7,7 @@ import { IoIosMenu } from 'react-icons/io';
 import { RxCross2 } from 'react-icons/rx';
 import Button from '../Common/Buttons';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Globe } from 'lucide-react';
-
+import Logo from '@/components/Common/Logo';
 
 export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -18,8 +17,8 @@ export default function Navbar() {
             <nav className="fixed w-full z-40  border-b border-gray-800 ">
                 <Container padding='px-3'>
                     <div className="flex justify-between bg-primary  h-16 items-center">
-                        <div className={`flex items-center font-bold text-xl gap-2`}>
-                            <Globe className="w-6 h-6 text-blue-500" />  <div> {"Saa"}<span className='text-purple-400'>{"Sential"}</span></div>
+                        <div className={` font-bold text-xl gap-2`}>
+                            <Link href={"/"} className='flex items-center  gap-2'><Logo /> </Link>
                         </div>
                         <div className="hidden md:flex space-x-8 rounded-full border border-gray-800 p-2 px-7  ">
                             <NavLink href="/#home">Product</NavLink>
@@ -30,8 +29,8 @@ export default function Navbar() {
                         </div>
 
                         <div className='flex gap-2 sm:gap-8 text-sm items-center justify-center '>
-                            <button className='hover:text-purple-500 '>Login</button>
-                            <Button type='primary'>SignUp</Button>
+                            <Link href={"/login"}> <button className='hover:text-purple-500 '>Login</button></Link>
+                            <Link href={"signup"}> <Button type='primary'>SignUp</Button></Link>
                         </div>
 
                         <div className="md:hidden">
