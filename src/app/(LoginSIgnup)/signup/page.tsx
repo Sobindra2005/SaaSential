@@ -23,7 +23,7 @@ type SignupFormData = z.infer<typeof schema>;
 
 const Signup: React.FC = () => {
     const router = useRouter();
-    const { register, handleSubmit, formState: { errors } } = useForm<SignupFormData>({
+    const { register, handleSubmit } = useForm<SignupFormData>({
         resolver: zodResolver(schema)
     });
   

@@ -39,7 +39,7 @@ const Login: React.FC = () => {
 
             <div className="mt-4 text-center">
                 <p className="text-secondary">
-                    Don't have an account?{' '}
+                    {"Don't have an account?"}
                     <a href="/signup" className="text-secondary hover:underline">
                         Sign Up
                     </a>
