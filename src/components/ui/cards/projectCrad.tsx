@@ -1,7 +1,7 @@
 
 "use client"
 import React from 'react';
-import { motion } from 'framer-motion'; 2
+import { motion } from 'framer-motion'; 
 import Image from 'next/image';
 import { FaChartBar, FaEdit, FaTrash, FaLink } from 'react-icons/fa';
 

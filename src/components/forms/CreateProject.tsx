@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+"use client"
+import React, { useEffect, useState } from 'react';
 import { X, ArrowRight, ArrowLeft, Check, ShoppingBag, NotebookPen, FileUser } from 'lucide-react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -124,9 +125,9 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
     return isValid;
   };
 
-  React.useEffect(() => {
+ useEffect(() => {
     validateCurrentStep();
-  }, [currentStep, projectData]);
+  }, [currentStep, projectData,validateCurrentStep]);
 
   const renderStep = () => {
     switch (currentStep) {
