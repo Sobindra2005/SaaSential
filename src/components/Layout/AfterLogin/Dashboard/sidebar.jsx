@@ -53,7 +53,7 @@ const SidebarItem = ({ icon: Icon, label, isOpen }) => {
             {isOpen && <motion.div
                 initial={{ display: 'none' }}
                 animate={{ display: 'block' }}
-                transition={{ delay: 0.1 }}
+                transition={{ delay: 0.2 }}
                 className="ml-4">{label}</motion.div>}
         </li>
     );

@@ -4,6 +4,7 @@ import Container from '@/components/Layout/Container';
 import ProjectCard from '@/components/ui/cards/projectCrad';
 import ProjectWizard from '@/components/forms/CreateProject';
 import AfterLoginHeader from '../../../components/Layout/AfterLogin/Dashboard/header';
+import { AnimatePresence } from 'framer-motion';
 
 const Home: React.FC = () => {
     const [showWizard, setShowWizard] = useState(false);
@@ -32,7 +33,7 @@ const Home: React.FC = () => {
     ]);
 
 
-    const handleCreateProject = (projectData: any) => {
+    const handleCreateProject = (projectData: { name: string; description: string }) => {
         const newProject = {
             id: (projects.length + 1).toString(),
             projectName: projectData.name,
@@ -49,13 +50,17 @@ const Home: React.FC = () => {
         <>
             <AfterLoginHeader onCreate={() => setShowWizard(true)} />
             <Container className="min-h-screen p-10 w-full mt-24  ml-24 ">
-
-                {showWizard && (
-                    <ProjectWizard
-                        onClose={() => setShowWizard(false)}
-                        onComplete={handleCreateProject}
-                    />
-                )}
+                <AnimatePresence mode='wait'>
+                    {showWizard && (
+                        <div >
+                            <ProjectWizard
+            
+                                onClose={() => setShowWizard(false)}
+                                onComplete={handleCreateProject}
+                            />
+                        </div>
+                    )}
+                </AnimatePresence>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full ">
                     {projects.map((project, index) => (
                         <ProjectCard
