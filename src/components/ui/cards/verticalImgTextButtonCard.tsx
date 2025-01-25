@@ -1,16 +1,15 @@
 import React from 'react';
-import Image from 'next/image';
-import Button from '@/components/Common/Buttons';
+import Image from 'next/image'
 
 interface VerticalImgTextButtonCardProps {
     imageUrl: string;
     title: string;
     description: string;
-    buttonText: string;
+  
     onButtonClick: () => void;
 }
 
-const VerticalImgTextButtonCard: React.FC<VerticalImgTextButtonCardProps> = ({ imageUrl, title, description, buttonText, onButtonClick }) => {
+const VerticalImgTextButtonCard: React.FC<VerticalImgTextButtonCardProps> = ({ imageUrl, title, description, onButtonClick }) => {
     return (
         <div onClick={onButtonClick} className=" hover:border-secondary hover:bg-gray-800 flex flex-col items-center border border-border rounded-lg p-4 w-[18rem] h-[18rem] justify-between ">
             <div className='w-full flex justify-center p-4'> 

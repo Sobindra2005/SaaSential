@@ -1,5 +1,4 @@
 import React from 'react';
-import { Laptop2 } from 'lucide-react';
 
 export default function Loader() {
   return (

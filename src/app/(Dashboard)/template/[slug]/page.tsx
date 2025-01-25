@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Container from '@/components/Layout/Container';
 import AfterLoginHeader from '../../../../components/Layout/AfterLogin/Dashboard/header';
 import SearchBar from '@/components/Common/searchBar';
-import { Eye, GripHorizontal } from 'lucide-react';
+import {  GripHorizontal } from 'lucide-react';
 import Image from 'next/image';
 
 interface TemplateData {

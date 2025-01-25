@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { X, ArrowRight, ArrowLeft, Check, ShoppingBag, NotebookPen, FileUser } from 'lucide-react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -104,7 +104,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
     }
   };
 
-  const validateCurrentStep = async () => {
+  const validateCurrentStep = useCallback(async () => {
     let isValid = false;
     switch (currentStep) {
       case 0:
@@ -121,10 +121,13 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
     }
     setStepValid(isValid);
     return isValid;
-  };
+  }, [currentStep, trigger]);
 
   useEffect(() => {
-    validateCurrentStep();
+    const validateStep = async () => {
+      await validateCurrentStep();
+    };
+    validateStep();
   }, [currentStep, projectData, validateCurrentStep]);
 
   const renderStep = () => {
@@ -206,11 +209,11 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
               className="gap-9 flex justify-center items-center text-center ">
               <div onClick={() => setValue('templateDesign', "manual")} className={` border rounded-xl ${projectData.templateDesign === "manual" ? 'border-blue-500 bg-[#1c2639]' : 'border-gray-700'
                 }`}>
-                <VerticalImgTextButtonCard title='Choose Template Manually' description='Would you like to select a template yourself?' imageUrl='/images/M1_297.webp' buttonText='Select Template' onButtonClick={() => console.log("Manual selection")} />
+                <VerticalImgTextButtonCard title='Choose Template Manually' description='Would you like to select a template yourself?' imageUrl='/images/M1_297.webp' onButtonClick={() => console.log("Manual selection")} />
               </div>
               <div onClick={() => setValue('templateDesign', "ai")} className={`border rounded-xl ${projectData.templateDesign === "ai" ? 'border-blue-500 bg-[#1c2639]' : 'border-gray-700'
                 }`}>
-                <VerticalImgTextButtonCard title='AI Template Selection' description='Let AI choose the best template for you automatically.' imageUrl='/images/Screenshot 2025-01-24 191436.png' buttonText='Use AI' onButtonClick={() => console.log("AI selection")} />
+                <VerticalImgTextButtonCard title='AI Template Selection' description='Let AI choose the best template for you automatically.' imageUrl='/images/Screenshot 2025-01-24 191436.png'  onButtonClick={() => console.log("AI selection")} />
               </div>
             </motion.div>
           </AnimatePresence>
