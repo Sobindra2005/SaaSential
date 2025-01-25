@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller } from 'react-hook-form';
 import Input, { TextArea } from '../Common/Input';
 import { AnimatePresence, motion } from "framer-motion"
+import VerticalImgTextButtonCard from '../ui/cards/verticalImgTextButtonCard';
 
 interface WizardStep {
   title: string;
@@ -35,8 +36,8 @@ interface ProjectData {
   name: string;
   description: string;
   template: string;
-  primaryColor: string;
-  domain: string;
+  templateDesign: string;
+  templateId: string;
 }
 
 interface ProjectWizardProps {
@@ -48,16 +49,16 @@ const schema = z.object({
   name: z.string().min(3),
   description: z.string().min(10),
   template: z.string().nonempty(),
-  primaryColor: z.string().nonempty(),
-  domain: z.string().nonempty()
+  templateDesign: z.string().nonempty(),
+  templateId: z.string().nonempty()
 });
 
 const defaultValues: ProjectData = {
   name: '',
   description: '',
   template: '',
-  primaryColor: '#000000',
-  domain: ''
+  templateDesign: '',
+  templateId: ''
 };
 
 const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) => {
@@ -73,7 +74,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
     mode: 'onChange',
     defaultValues
   });
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(2);
   const [stepValid, setStepValid] = useState(false);
 
   const templates = [
@@ -113,10 +114,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
         isValid = await trigger(['name', 'description']);
         break;
       case 2:
-        isValid = await trigger(['primaryColor', 'domain']);
-        break;
-      case 3:
-        isValid = true;
+        isValid = await trigger(['templateDesign', 'templateId']);
         break;
       default:
         isValid = false;
@@ -125,9 +123,9 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
     return isValid;
   };
 
- useEffect(() => {
+  useEffect(() => {
     validateCurrentStep();
-  }, [currentStep, projectData,validateCurrentStep]);
+  }, [currentStep, projectData, validateCurrentStep]);
 
   const renderStep = () => {
     switch (currentStep) {
@@ -139,7 +137,10 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
             {templates.map(template => (
               <button
                 key={template.id}
-                onClick={() => setValue('template', template.id)}
+                onClick={() => {
+                  setValue('template', template.id)
+                  handleNext();
+                }}
                 className={`p-6 border-2 rounded-lg text-center hover:border-blue-500 transition-colors ${projectData.template === template.id ? 'border-blue-500 bg-[#1c2639]' : 'border-gray-700'
                   }`}
               >
@@ -160,7 +161,6 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
               transition={{ duration: 0.2 }}
               className="space-y-6">
               <div>
-
                 <Controller
                   name="name"
                   control={control}
@@ -177,7 +177,6 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
                 />
               </div>
               <div>
-
                 <Controller
                   name="description"
                   control={control}
@@ -204,38 +203,14 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2 }}
-              className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Primary Color</label>
-                <Controller
-                  name="primaryColor"
-                  control={control}
-                  render={({ field }) => (
-                    <input
-                      type="color"
-                      {...field}
-                      className="w-full h-12 p-1 rounded-lg border border-gray-700 bg-[#1c2639]"
-                    />
-                  )}
-                />
+              className="gap-9 flex justify-center items-center text-center ">
+              <div onClick={() => setValue('templateDesign', "manual")} className={` border rounded-xl ${projectData.templateDesign === "manual" ? 'border-blue-500 bg-[#1c2639]' : 'border-gray-700'
+                }`}>
+                <VerticalImgTextButtonCard title='Choose Template Manually' description='Would you like to select a template yourself?' imageUrl='/images/M1_297.webp' buttonText='Select Template' onButtonClick={() => console.log("Manual selection")} />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Project Domain</label>
-                <div className="flex items-center">
-                  <span className="text-gray-500 mr-2">https://</span>
-                  <Controller
-                    name="domain"
-                    control={control}
-                    render={({ field }) => (
-                      <input
-                        type="text"
-                        {...field}
-                        className="flex-1 px-4 py-2 bg-[#1c2639] border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white"
-                        placeholder="myproject.com"
-                      />
-                    )}
-                  />
-                </div>
+              <div onClick={() => setValue('templateDesign', "ai")} className={`border rounded-xl ${projectData.templateDesign === "ai" ? 'border-blue-500 bg-[#1c2639]' : 'border-gray-700'
+                }`}>
+                <VerticalImgTextButtonCard title='AI Template Selection' description='Let AI choose the best template for you automatically.' imageUrl='/images/Screenshot 2025-01-24 191436.png' buttonText='Use AI' onButtonClick={() => console.log("AI selection")} />
               </div>
             </motion.div>
           </AnimatePresence>
@@ -268,16 +243,16 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
                   </div>
                   <div>
                     <dt className="text-sm font-medium text-gray-500">Domain</dt>
-                    <dd className="text-sm text-white">https://{projectData.domain}</dd>
+                    <dd className="text-sm text-white">https://{projectData.templateId}</dd>
                   </div>
                   <div>
                     <dt className="text-sm font-medium text-gray-500">Primary Color</dt>
                     <dd className="flex items-center space-x-2">
                       <div
                         className="w-6 h-6 rounded-full border border-gray-700"
-                        style={{ backgroundColor: projectData.primaryColor }}
+                        style={{ backgroundColor: projectData.templateDesign }}
                       />
-                      <span className="text-sm text-white">{projectData.primaryColor}</span>
+                      <span className="text-sm text-white">{projectData.templateDesign}</span>
                     </dd>
                   </div>
                 </dl>
@@ -293,51 +268,51 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
   return (
     <AnimatePresence mode='wait'>
 
-    <motion.div
-    initial={{ opacity: 0,y:20 }}
-    animate={{ opacity: 1 ,y:0}}
-    exit={{ opacity: 0 }}
-    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 text-white">
-      <div className="bg-[#141d2d] rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
-        <div className="px-6 py-4 flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-semibold">{steps[currentStep].title}</h2>
-            <p className="text-sm text-gray-500">{steps[currentStep].description}</p>
-            <div className="mt-2 text-sm text-gray-400">
-              Step {currentStep + 1} of {steps.length}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-30 text-white">
+        <div className="bg-[#141d2d] rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+          <div className="px-6 py-4 flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold">{steps[currentStep].title}</h2>
+              <p className="text-sm text-gray-500">{steps[currentStep].description}</p>
+              <div className="mt-2 text-sm text-gray-400">
+                Step {currentStep + 1} of {steps.length}
+              </div>
             </div>
+            <button className="text-white text-opacity-70 hover:text-opacity-100" onClick={onClose}>
+              <X className="w-6 h-6" />
+            </button>
           </div>
-          <button className="text-white text-opacity-70 hover:text-opacity-100" onClick={onClose}>
-            <X className="w-6 h-6" />
-          </button>
+          <div className="px-6 py-8">{renderStep()}</div>
+          <div className="px-6 py-4 bg-[#0f1724] flex justify-between items-center">
+            <button
+              onClick={handleBack}
+              className="text-white text-opacity-70 hover:text-opacity-100 transition-colors flex items-center space-x-2"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              <span>Back</span>
+            </button>
+            <button
+              onClick={handleNext}
+              disabled={!stepValid}
+              className={`px-4 py-2 rounded-lg font-medium flex items-center ${stepValid
+                ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                }`}
+            >
+              <span>{currentStep === steps.length - 1 ? 'Create' : 'Next'}</span>
+              {currentStep === steps.length - 1 ? (
+                <Check className="w-4 h-4 ml-2" />
+              ) : (
+                <ArrowRight className="w-4 h-4 ml-2" />
+              )}
+            </button>
+          </div>
         </div>
-        <div className="px-6 py-8">{renderStep()}</div>
-        <div className="px-6 py-4 bg-[#0f1724] flex justify-between items-center">
-          <button
-            onClick={handleBack}
-            className="text-white text-opacity-70 hover:text-opacity-100 transition-colors flex items-center space-x-2"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            <span>Back</span>
-          </button>
-          <button
-            onClick={handleNext}
-            disabled={!stepValid}
-            className={`px-4 py-2 rounded-lg font-medium flex items-center ${stepValid
-              ? 'bg-blue-600 hover:bg-blue-700 text-white'
-              : 'bg-gray-600 text-gray-400 cursor-not-allowed'
-              }`}
-          >
-            <span>{currentStep === steps.length - 1 ? 'Create' : 'Next'}</span>
-            {currentStep === steps.length - 1 ? (
-              <Check className="w-4 h-4 ml-2" />
-            ) : (
-              <ArrowRight className="w-4 h-4 ml-2" />
-            )}
-          </button>
-        </div>
-      </div>
-    </motion.div>
+      </motion.div>
     </AnimatePresence>
   );
 };

@@ -54,7 +54,6 @@ const Home: React.FC = () => {
                     {showWizard && (
                         <div >
                             <ProjectWizard
-            
                                 onClose={() => setShowWizard(false)}
                                 onComplete={handleCreateProject}
                             />

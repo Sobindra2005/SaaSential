@@ -29,7 +29,7 @@ const Input = <T extends FieldValues>({
                 id={id as string}
                 {...register(id as unknown as Path<T>, { required })}
                 placeholder={placeholder}
-                className="w-full p-2 border border-gray-700 focus:border-secondary hover:border-secondary rounded bg-transparent text-gray-400 outline-none"
+                className="w-full p-2 border border-gray-700 focus:border-secondary hover:border-secondary rounded bg-transparent  outline-none"
             />
             <RiSparkling2Line size={22} className="absolute right-2 top-10 text-blue-300 cursor-pointer " />
         </div>
@@ -62,9 +62,9 @@ export const TextArea = <T extends FieldValues>({
                 id={id as string}
                 {...register(id as unknown as Path<T>, { required })}
                 placeholder={placeholder}
-                className="w-full p-2 border  border-gray-700 focus:border-secondary overflow-auto resize-none hover:border-secondary rounded bg-transparent text-gray-400 outline-none"
+                className="w-full p-2 border  border-gray-700 focus:border-secondary overflow-auto resize-none hover:border-secondary rounded bg-transparent outline-none"
             />
-            <RiSparkling2Line onMouseOver={()=>console.log("yes i hover the button ") } size={22} className="absolute right-2 top-10 text-blue-300 cursor-pointer " />
+            <RiSparkling2Line onMouseOver={() => console.log("yes i hover the button ")} size={22} className="absolute right-2 top-10 text-blue-300 cursor-pointer " />
         </div>
     );
 };
