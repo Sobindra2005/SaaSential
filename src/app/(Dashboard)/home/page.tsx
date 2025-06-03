@@ -5,9 +5,13 @@ import ProjectCard from '@/components/ui/cards/projectCrad';
 import ProjectWizard from '@/components/forms/CreateProject';
 import AfterLoginHeader from '../../../components/Layout/AfterLogin/Dashboard/header';
 import { AnimatePresence } from 'framer-motion';
+import { Notification } from '@/components/Common/notification';
+import { useRouter } from 'next/navigation';
 
 const Home: React.FC = () => {
     const [showWizard, setShowWizard] = useState(false);
+    const [notification, setNotification] = useState({ visible: false });
+    const router = useRouter()
     const [projects, setProjects] = useState([
         {
             id: '1',
@@ -33,23 +37,42 @@ const Home: React.FC = () => {
     ]);
 
 
-    const handleCreateProject = (projectData: { name: string; description: string }) => {
+    const handleCreateProject = (projectData: {template :string , name: string; templateDesign: string; templateId: string | null; description: string }) => {
+        console.log(projectData)
         const newProject = {
             id: (projects.length + 1).toString(),
+            template: projectData.template,
             projectName: projectData.name,
             description: projectData.description,
+            templateDesign: projectData.templateDesign,
+            templateId: projectData.templateId,
             lastModified: new Date().toISOString().split('T')[0],
             projectImage: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80'
         };
-
+        setNotification({ visible: true, });
         setProjects([newProject, ...projects]);
         setShowWizard(false);
+        projectData.templateDesign === 'ai' ? router.push('/visualEditor') : router.push(`/template/${projectData.template}`);
+    };
+
+    const handleCloseNotification = () => {
+        setNotification(prev => ({ ...prev, visible: false }));
     };
 
     return (
         <>
             <AfterLoginHeader onCreate={() => setShowWizard(true)} />
             <Container className="min-h-screen p-10 w-full mt-24  ml-24 ">
+                <div className="fixed top-5 right-5 z-50">
+                    <Notification
+                        type={'success'}
+                        message={'Project created successfully!'}
+                        isVisible={notification.visible}
+                        onClose={handleCloseNotification}
+                        autoClose={true}
+                        autoCloseTime={4000}
+                    />
+                </div>
                 <AnimatePresence mode='wait'>
                     {showWizard && (
                         <div >

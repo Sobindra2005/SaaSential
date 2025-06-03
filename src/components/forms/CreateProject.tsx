@@ -74,7 +74,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
     mode: 'onChange',
     defaultValues
   });
-  const [currentStep, setCurrentStep] = useState(2);
+  const [currentStep, setCurrentStep] = useState(0);
   const [stepValid, setStepValid] = useState(false);
 
   const templates = [
@@ -86,13 +86,13 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
   const projectData = watch();
 
   const handleNext = async () => {
+
     const isStepValid = await validateCurrentStep();
-    if (isStepValid) {
-      if (currentStep < steps.length - 1) {
-        setCurrentStep(prev => prev + 1);
-      } else {
-        handleSubmit(onComplete)();
-      }
+    if (isStepValid && currentStep < steps.length - 1) {
+      setCurrentStep(prev => prev + 1);
+    }
+    else {
+      handleSubmit(onComplete)();
     }
   };
 
@@ -189,7 +189,8 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
                       label='description'
                       id='description'
                       register={register}
-                      placeholder="e.g., A platform for agricultural education..."
+                      placeholder="e.g., A platform for agricultural education and resources 
+                      decribe in more then 10 words"
                     />
                   )}
                 />
@@ -207,13 +208,13 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2 }}
               className="gap-9 flex justify-center items-center text-center ">
-              <div onClick={() => setValue('templateDesign', "manual")} className={` border rounded-xl ${projectData.templateDesign === "manual" ? 'border-blue-500 bg-[#1c2639]' : 'border-gray-700'
+              <div onClick={() => { setValue('templateDesign', "manual"); setValue('templateId', 'shduahka'); handleNext(); }} className={` border rounded-xl ${projectData.templateDesign === "manual" ? 'border-blue-500 bg-[#1c2639]' : 'border-gray-700'
                 }`}>
                 <VerticalImgTextButtonCard title='Choose Template Manually' description='Would you like to select a template yourself?' imageUrl='/images/M1_297.webp' onButtonClick={() => console.log("Manual selection")} />
               </div>
-              <div onClick={() => setValue('templateDesign', "ai")} className={`border rounded-xl ${projectData.templateDesign === "ai" ? 'border-blue-500 bg-[#1c2639]' : 'border-gray-700'
+              <div onClick={() => { setValue('templateDesign', "ai"); setValue('templateId', 'shduahka'); handleNext(); }} className={`border rounded-xl ${projectData.templateDesign === "ai" ? 'border-blue-500 bg-[#1c2639]' : 'border-gray-700'
                 }`}>
-                <VerticalImgTextButtonCard title='AI Template Selection' description='Let AI choose the best template for you automatically.' imageUrl='/images/Screenshot 2025-01-24 191436.png'  onButtonClick={() => console.log("AI selection")} />
+                <VerticalImgTextButtonCard title='AI Template Selection' description='Let AI choose the best template for you automatically.' imageUrl='/images/Screenshot 2025-01-24 191436.png' onButtonClick={() => console.log("AI selection")} />
               </div>
             </motion.div>
           </AnimatePresence>
@@ -275,7 +276,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-30 text-white">
+        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40 text-white">
         <div className="bg-[#141d2d] rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
           <div className="px-6 py-4 flex items-center justify-between">
             <div>

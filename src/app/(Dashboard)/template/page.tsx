@@ -1,10 +1,11 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import Container from '@/components/Layout/Container';
-import AfterLoginHeader from '../../../../components/Layout/AfterLogin/Dashboard/header';
+import AfterLoginHeader from '@/components/Layout/AfterLogin/Dashboard/header';
 import SearchBar from '@/components/Common/searchBar';
 import {  GripHorizontal } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 interface TemplateData {
     id: string;
@@ -33,7 +34,7 @@ const sampleTemplates: TemplateData[] = [
 const TemplatePage = () => {
     const [templates, setTemplates] = useState<TemplateData[]>(sampleTemplates);
     const [selectedTemplate, setSelectedTemplate] = useState<TemplateData | null>(null);
-
+    const router = useRouter();
     useEffect(() => {
         const fetchTemplates = async () => {
             const response = await fetch('/api/templates');
@@ -60,6 +61,7 @@ const TemplatePage = () => {
 
     const handleSelectButtonClick = () => {
         if (selectedTemplate) {
+            router.push('/visualEditor')
             console.log(`Selected template with id: ${selectedTemplate.id}`);
         }
     };

@@ -1,5 +1,5 @@
 "use client";
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -9,6 +9,7 @@ import { FaGithub } from 'react-icons/fa';
 import Container from '@/components/Layout/Container';
 import Button from '@/components/Common/Buttons';
 import Input from '@/components/Common/Input';
+import { Notification } from '@/components/Common/notification';
 
 const schema = z.object({
     email: z.string().email({ message: "Invalid email address" }),
@@ -23,10 +24,11 @@ type SignupFormData = z.infer<typeof schema>;
 
 const Signup: React.FC = () => {
     const router = useRouter();
-    const { register, handleSubmit } = useForm<SignupFormData>({
+    const { register, handleSubmit, formState: { errors } } = useForm<SignupFormData>({
         resolver: zodResolver(schema)
     });
-  
+    const [notification, setNotification] = useState({ visible: false, message: '', type: 'error' as const });
+
 
     const handleSignup: SubmitHandler<SignupFormData> = (data) => {
         console.log('Signing up with', data.email, data.password);
@@ -43,14 +45,42 @@ const Signup: React.FC = () => {
         console.log('Signing in with GitHub');
     };
 
+    useEffect(() => {
+        if (errors.email) {
+            setNotification({
+                visible: true,
+                message: errors.email.message || 'Invalid email address',
+                type: 'error'
+            });
+        } else if (errors.password) {
+            setNotification({
+                visible: true,
+                message: errors.password.message || 'Invalid password',
+                type: 'error'
+            });
+        }
+    }, [errors.email, errors.password]);
+
+    const handleCloseNotification = () => {
+        setNotification(prev => ({ ...prev, visible: false }));
+    };
     return (
         <Container className="flex flex-col items-center justify-center min-h-screen py-2">
-
+            <div className="fixed top-5 right-5 z-50">
+                <Notification
+                    type={notification.type}
+                    message={notification.message}
+                    isVisible={notification.visible}
+                    onClose={handleCloseNotification}
+                    autoClose={true}
+                    autoCloseTime={4000}
+                />
+            </div>
             <h2 className="text-4xl font-bold mb-8 text-center text-secondary">Create Your Account</h2>
             <form onSubmit={handleSubmit(handleSignup)} className="w-full max-w-md bg-primary p-8 rounded-lg shadow-md">
-                <Input placeholder='eg:example@gmail.com' label="Email" type="email" id="email" register={register} required />
-                <Input placeholder='eg:Example#42$56' label="Password" type="password" id="password" register={register} required />
-                <Input placeholder='eg:Example#42$56' label="Confirm Password" type="password" id="confirmPassword" register={register} required />
+                <Input placeholder='eg:example@gmail.com' label="Email" type="email" id="email" register={register} enabledSparkle={false} required />
+                <Input placeholder='eg:Example#42$56' label="Password" type="password" id="password" register={register} enabledSparkle={false} required />
+                <Input placeholder='eg:Example#42$56' label="Confirm Password" type="password" id="confirmPassword" register={register} enabledSparkle={false} required />
                 <Button type="primary" className="w-full py-2">Sign Up</Button>
             </form>
 

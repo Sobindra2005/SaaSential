@@ -1,5 +1,5 @@
 "use client";
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -8,6 +8,7 @@ import Container from '@/components/Layout/Container';
 import Button from '@/components/Common/Buttons';
 import Input from '@/components/Common/Input';
 import { IoPeople } from 'react-icons/io5';
+import { Notification } from '@/components/Common/notification';
 
 const schema = z.object({
     email: z.string().email({ message: "Invalid email address" }),
@@ -18,6 +19,8 @@ type LoginFormData = z.infer<typeof schema>;
 
 const Login: React.FC = () => {
     const router = useRouter();
+    const [notification, setNotification] = useState({ visible: false, message: '', type: 'error' as const });
+
     const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
         resolver: zodResolver(schema)
     });
@@ -27,14 +30,43 @@ const Login: React.FC = () => {
         router.push('/dashboard'); // Redirect to dashboard after login
     };
 
+    // Show notification when errors occur
+    React.useEffect(() => {
+        if (errors.email) {
+            setNotification({
+                visible: true,
+                message: errors.email.message || 'Invalid email address',
+                type: 'error'
+            });
+        } else if (errors.password) {
+            setNotification({
+                visible: true,
+                message: errors.password.message || 'Invalid password',
+                type: 'error'
+            });
+        }
+    }, [errors.email, errors.password]);
+
+    const handleCloseNotification = () => {
+        setNotification(prev => ({ ...prev, visible: false }));
+    };
+
     return (
         <Container className="flex flex-col items-center justify-center min-h-screen py-2">
+            <div className="fixed top-5 right-5 z-50">
+                <Notification
+                    type={notification.type}
+                    message={notification.message}
+                    isVisible={notification.visible}
+                    onClose={handleCloseNotification}
+                    autoClose={true}
+                    autoCloseTime={4000}
+                />
+            </div>
             <h2 className="text-4xl font-bold mb-8 text-center text-secondary">Login to Your Account</h2>
             <form onSubmit={handleSubmit(handleLogin)} className="w-full max-w-md bg-primary p-8 rounded-lg shadow-md">
-                <Input placeholder='eg: example@gmail.com' label="Email" type="email" id="email" register={register} required />
-                {errors.email && <p className="text-red-500">{errors.email.message}</p>}
-                <Input placeholder='eg: example@726$Rfs' label="Password" type="password" id="password" register={register} required />
-                {errors.password && <p className="text-red-500">{errors.password.message}</p>}
+                <Input placeholder='eg: example@gmail.com' label="Email" type="email" id="email" enabledSparkle={false} register={register} required />
+                <Input placeholder='eg: example@726$Rfs' label="Password" type="password" id="password" enabledSparkle={false} register={register} required />
                 <Button type="primary" className="w-full py-2">Login</Button>
             </form>
 

@@ -6,7 +6,7 @@ import ReviewCard from '../ui/cards/ReviewCard';
 
 const TrustedByAll = () => {
     return (
-        <Container className='w-full min-h-screen flex flex-col mt-[5rem]  '>
+        <Container padding='0px' className='w-full min-h-screen flex flex-col mt-[5rem]  '>
             <motion.div
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
