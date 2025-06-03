@@ -50,13 +50,10 @@ const TemplatePage = () => {
     }, []);
 
     const handleTemplateClick = (template: TemplateData) => {
-
         if (selectedTemplate === template) {
             return setSelectedTemplate(null);
         }
         return setSelectedTemplate(template);
-
-
     };
 
     const handleSelectButtonClick = () => {

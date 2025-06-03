@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { UseFormRegister, FieldValues, Path } from "react-hook-form";
-import { RiSparkling2Line, RiEyeLine, RiEyeOffLine } from "react-icons/ri";
+import { RiSparkling2Line, RiEyeLine, RiEyeOffLine, RiLoader4Line } from "react-icons/ri";
 
 interface InputProps<T extends FieldValues> {
     label: string;
@@ -11,6 +11,9 @@ interface InputProps<T extends FieldValues> {
     required?: boolean;
     placeholder: string;
     enabledSparkle?: boolean;
+    handleAiGenerateContent?: () => void;
+    isGenerating: boolean;
+
 }
 
 const Input = <T extends FieldValues>({
@@ -20,6 +23,8 @@ const Input = <T extends FieldValues>({
     register,
     required = false,
     placeholder,
+    handleAiGenerateContent,
+    isGenerating,
     enabledSparkle = true
 }: InputProps<T>) => {
     const [showPassword, setShowPassword] = useState(false);
@@ -27,6 +32,7 @@ const Input = <T extends FieldValues>({
         setShowPassword(prev => !prev);
     };
     const inputType = type === 'password' && showPassword ? 'text' : type;
+
     return (
         <div className="mb-6 relative ">
             <label htmlFor={id as string} className="block text-gray-100 capitalize  mb-2">
@@ -48,7 +54,19 @@ const Input = <T extends FieldValues>({
                     {showPassword ? <RiEyeOffLine size={22} /> : <RiEyeLine size={22} />}
                 </button>
             )}
-            {enabledSparkle && <RiSparkling2Line size={22} className="absolute right-2 top-10 text-blue-300 cursor-pointer " />}
+            {isGenerating ? (
+                <div className="absolute right-2 top-10">
+                    <div className="animate-spin text-blue-300">
+                        <RiLoader4Line size={22} />
+                    </div>
+                </div>
+            ) : (
+                <RiSparkling2Line
+                    onClick={handleAiGenerateContent}
+                    size={22}
+                    className="absolute right-2 top-10 text-blue-300 cursor-pointer"
+                />
+            )}
         </div>
     );
 };
@@ -59,6 +77,9 @@ interface TextArea<T extends FieldValues> {
     register: UseFormRegister<T>;
     required?: boolean;
     placeholder: string;
+    handleAiGenerateContent?: () => void;
+    isGenerating: boolean;
+
 }
 
 
@@ -68,6 +89,8 @@ export const TextArea = <T extends FieldValues>({
     register,
     required = false,
     placeholder,
+    handleAiGenerateContent,
+    isGenerating
 }: TextArea<T>) => {
     return (
         <div className="mb-6 relative ">
@@ -81,7 +104,19 @@ export const TextArea = <T extends FieldValues>({
                 placeholder={placeholder}
                 className="w-full p-2 border  border-gray-700 focus:border-secondary overflow-auto resize-none hover:border-secondary rounded bg-transparent outline-none"
             />
-            <RiSparkling2Line onMouseOver={() => console.log("yes i hover the button ")} size={22} className="absolute right-2 top-10 text-blue-300 cursor-pointer " />
+            {isGenerating ? (
+                <div className="absolute right-2 top-10">
+                    <div className="animate-spin text-blue-300">
+                        <RiLoader4Line size={22} />
+                    </div>
+                </div>
+            ) : (
+                <RiSparkling2Line
+                    onClick={handleAiGenerateContent}
+                    size={22}
+                    className="absolute right-2 top-10 text-blue-300 cursor-pointer"
+                />
+            )}
         </div>
     );
 };

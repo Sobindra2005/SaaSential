@@ -76,6 +76,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
   });
   const [currentStep, setCurrentStep] = useState(0);
   const [stepValid, setStepValid] = useState(false);
+  const [isGenerating, setIsGenerating] = useState({name: false, description: false});
 
   const templates = [
     { id: 'portfolio', name: 'Portfolio', icon: FileUser },
@@ -130,6 +131,53 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
     validateStep();
   }, [currentStep, projectData, validateCurrentStep]);
 
+
+  const handleAiGenerateContent = async (label: string) => {
+
+    let ContentPrompt;
+    if (label === "name") {
+      if (projectData.description) {
+        ContentPrompt = `Generate only a single-word name for a project with this description: ${projectData.description}. Return just the name, nothing else.`;
+      } else {
+        ContentPrompt = `Generate only a single-word name for a project with template: ${projectData.template}. Return just the name, nothing else.`;
+      }
+    }
+    else if (label === "description") {
+      if (projectData.name) {
+        ContentPrompt = `Generate a brief one-sentence description for a project named "${projectData.name}". Keep it concise.`;
+      } else {
+        ContentPrompt = `Generate a brief one-sentence description for a project with template: ${projectData.template}. Keep it concise.`;
+      }
+    }
+
+    try {
+      setIsGenerating(prev => ({ ...prev, [label]: true }));
+      const response = await fetch('/api/ContentSuggestion', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ body: ContentPrompt }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+      else {
+        setIsGenerating(prev => ({ ...prev, [label]: false }));
+      }
+
+      const data = await response.json();
+
+      // Handle the response data (e.g., update a form field)
+      if (data.output && label === 'description') {
+        setValue('description', data.output);
+      } else if (data.output && label === 'name') {
+        setValue('name', data.output);
+      }
+    } catch (error) {
+      console.error("Error calling ContentSuggestion API:", error);
+    }
+  }
+
   const renderStep = () => {
     switch (currentStep) {
       case 0:
@@ -175,6 +223,8 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
                       id='name'
                       register={register}
                       placeholder="e.g., Agrosikshya"
+                      handleAiGenerateContent={() => handleAiGenerateContent('name')}
+                      isGenerating={isGenerating.name}
                     />
                   )}
                 />
@@ -189,8 +239,11 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
                       label='description'
                       id='description'
                       register={register}
-                      placeholder="e.g., A platform for agricultural education and resources 
-                      decribe in more then 10 words"
+                      placeholder="e.g., A platform for agricultural education and resources
+                      describe in more then 10 words"
+                      handleAiGenerateContent={() => handleAiGenerateContent('description')}
+                      isGenerating={isGenerating.description}
+
                     />
                   )}
                 />
