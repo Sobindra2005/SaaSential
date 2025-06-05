@@ -12,7 +12,7 @@ interface InputProps<T extends FieldValues> {
     placeholder: string;
     enabledSparkle?: boolean;
     handleAiGenerateContent?: () => void;
-    isGenerating: boolean;
+    isGenerating?: boolean;
 
 }
 
@@ -54,7 +54,7 @@ const Input = <T extends FieldValues>({
                     {showPassword ? <RiEyeOffLine size={22} /> : <RiEyeLine size={22} />}
                 </button>
             )}
-            {isGenerating ? (
+            {enabledSparkle && (isGenerating ? (
                 <div className="absolute right-2 top-10">
                     <div className="animate-spin text-blue-300">
                         <RiLoader4Line size={22} />
@@ -66,7 +66,7 @@ const Input = <T extends FieldValues>({
                     size={22}
                     className="absolute right-2 top-10 text-blue-300 cursor-pointer"
                 />
-            )}
+            ))}
         </div>
     );
 };

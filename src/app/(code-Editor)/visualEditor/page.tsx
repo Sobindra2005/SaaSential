@@ -17,6 +17,7 @@ const VisualEditor = () => {
         console.log('Editor loaded', editor);
         setEditor(editor);
     };
+    console.log(editor)
 
     // const showToast = (id: string) =>
     //     editor?.runCommand(StudioCommands.toastAdd, {
