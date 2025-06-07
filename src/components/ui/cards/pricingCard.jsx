@@ -4,10 +4,9 @@ import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import Button from '../../Common/Buttons';
 
-const PricingCard = ({  planName, price, features, isPopular }) => {
+const PricingCard = ({ planName, price, features, isPopular }) => {
     return (
         <motion.div
-         
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{
@@ -22,11 +21,11 @@ const PricingCard = ({  planName, price, features, isPopular }) => {
             <p className="text-xl  mb-4">${price}/month</p>
             <ul className="list-disc list-inside mb-4">
                 {features.map((feature, index) => (
-                    <>
+        
                         <div key={`${index}-pricingcard`} className='flex gap-2 text-gray-400 '>
                             <span className='text-purple-700'><Check /></span>{feature}</div>
 
-                    </>
+             
                 ))}
             </ul>
             <Button type='primary' className='mt-2'>Get Started</Button>

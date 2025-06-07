@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Blocks, ChartLine, PanelLeftOpen, PanelRightOpen, Users, Workflow } from 'lucide-react';
+import Link from 'next/link';
 
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -11,10 +12,10 @@ const Sidebar = () => {
     };
 
     const sidebarItems = [
-        { icon: Blocks, label: 'Elements' },
-        { icon: Workflow, label: 'Integrations' },
-        { icon: ChartLine, label: 'Analytics' },
-        { icon: Users, label: 'Collaboration' },
+        { icon: Blocks, link: 'home', label: 'Projects' },
+        { icon: Workflow, link: 'template', label: 'Templates' },
+        { icon: ChartLine, link: 'analytics', label: 'Analytics' },
+        { icon: Users, link: 'collaboration', label: 'Collaboration' },
 
     ];
 
@@ -32,12 +33,13 @@ const Sidebar = () => {
             <nav className="mt-4 w-full">
                 <ul>
                     {sidebarItems.map((item, index) => (
-                        <SidebarItem
-                            key={index}
-                            icon={item.icon}
-                            label={item.label}
-                            isOpen={isOpen}
-                        />
+                        <Link key={item.link} href={`/${item.link}`}>
+                            <SidebarItem
+                                icon={item.icon}
+                                label={item.label}
+                                isOpen={isOpen}
+                            />
+                        </Link>
                     ))}
                 </ul>
             </nav>

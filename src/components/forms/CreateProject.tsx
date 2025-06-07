@@ -243,7 +243,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
                       describe in more then 10 words"
                       handleAiGenerateContent={() => handleAiGenerateContent('description')}
                       isGenerating={isGenerating.description}
-
+                      enabledSparkle={true}
                     />
                   )}
                 />
