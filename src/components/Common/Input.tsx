@@ -79,6 +79,7 @@ interface TextArea<T extends FieldValues> {
     placeholder: string;
     handleAiGenerateContent?: () => void;
     isGenerating: boolean;
+    enabledSparkle?: boolean;
 
 }
 
@@ -90,7 +91,8 @@ export const TextArea = <T extends FieldValues>({
     required = false,
     placeholder,
     handleAiGenerateContent,
-    isGenerating
+    isGenerating,
+    enabledSparkle = false
 }: TextArea<T>) => {
     return (
         <div className="mb-6 relative ">
@@ -104,7 +106,7 @@ export const TextArea = <T extends FieldValues>({
                 placeholder={placeholder}
                 className="w-full p-2 border  border-gray-700 focus:border-secondary overflow-auto resize-none hover:border-secondary rounded bg-transparent outline-none"
             />
-            {isGenerating ? (
+            {enabledSparkle && (isGenerating ? (
                 <div className="absolute right-2 top-10">
                     <div className="animate-spin text-blue-300">
                         <RiLoader4Line size={22} />
@@ -116,7 +118,7 @@ export const TextArea = <T extends FieldValues>({
                     size={22}
                     className="absolute right-2 top-10 text-blue-300 cursor-pointer"
                 />
-            )}
+            ))}
         </div>
     );
 };

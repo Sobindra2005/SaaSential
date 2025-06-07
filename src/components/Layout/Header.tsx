@@ -25,7 +25,7 @@ export default function Navbar() {
                             <NavLink href="/#Service&facilities">Price</NavLink>
                             <NavLink href="/#pricing">About</NavLink>
                             <NavLink href="/#trainers">Resources</NavLink>
-                            <NavLink href="/#gallery">Download</NavLink>
+                            <NavLink href="/contribute">Contribute Templates</NavLink>
                         </div>
 
                         <div className='flex gap-2 sm:gap-8 text-sm items-center justify-center '>

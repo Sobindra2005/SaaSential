@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Loader from '../Common/loading/loader';
 
-export default function LoadingWrapper({ children }) {
+export  function LoadingWrapper({ children }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {

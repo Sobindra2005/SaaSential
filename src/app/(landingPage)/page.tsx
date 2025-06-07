@@ -5,7 +5,7 @@ import HeroSection from "../../components/Layout/HeroSection";
 import TrustedByAll from "../../components/Layout/TrustedByAll";
 import Pricing from "../../components/Layout/Pricing";
 import Footer from "../../components/Footer";
-import LoadingWrapper from "../../components/wrapper/loading";
+import {LoadingWrapper} from "../../components/wrapper/loadingwrapper"
 
 export default function LandingPage() {
     return (

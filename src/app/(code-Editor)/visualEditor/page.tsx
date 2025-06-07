@@ -9,21 +9,10 @@ import GrapesJsStudio, {
 import '@grapesjs/studio-sdk/style';
 import Container from '@/components/Layout/Container';
 import { useState } from 'react';
+import { templates } from '@/entities/templates';
+import { Component } from 'lucide-react';
 
-const templates = {
-    template1: {
-        pages: [
-            { name: 'Home', component: '<div>Template 1 - Home</div>' },
-            { name: 'About', component: '<div>Template 1 - About</div>' }
-        ]
-    },
-    template2: {
-        pages: [
-            { name: 'Main', component: '<div>Template 2 - Main</div>' },
-            { name: 'Contact', component: '<div>Template 2 - Contact</div>' }
-        ]
-    }
-}
+
 
 const VisualEditor = () => {
     const [editor, setEditor] = useState<Editor>();
@@ -31,7 +20,10 @@ const VisualEditor = () => {
     const onReady = (editor: Editor) => {
         console.log('Editor loaded', editor);
         setEditor(editor);
-        editor.loadProjectData({ pages: templates.template2.pages });
+        // editor.loadProjectData({
+        //     pages:
+        //         templates.portfolio[1]
+        // });
     };
     console.log(editor)
 
@@ -72,7 +64,11 @@ const VisualEditor = () => {
                             type: 'web',
                             default: {
                                 pages: [
-                                    templates.template1.pages[1]
+                                    {
+                                        name: templates.portfolio.id2.name ,
+                                        Component: templates.portfolio.id2.component,
+                                        styles: templates.portfolio.id2.styles,
+                                    },
                                 ],
                             },
                         },
