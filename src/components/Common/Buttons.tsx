@@ -17,7 +17,7 @@ const Button: React.FC<Props> = ({ type, children, className, onClick }) => {
             classname += ' p-2 bg-blue-600 rounded-lg  hover:bg-blue-700 ';
             break;
         case 'tertiary':
-            classname += ' border border-gray-800 text-secondary  p-1 border-purple-800 rounded-3xl px-4  hover:bg-purple-900 ';
+            classname += ' border border-gray-800 text-secondary  p-1 border-purple-800 rounded-3xl px-4  bg-purple-900 hover:bg-opacity-20 ';
             break;
         default:
             break;

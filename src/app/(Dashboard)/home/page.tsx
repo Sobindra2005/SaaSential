@@ -37,7 +37,7 @@ const Home: React.FC = () => {
     ]);
 
 
-    const handleCreateProject = (projectData: {template :string , name: string; templateDesign: string; templateId: string | null; description: string }) => {
+    const handleCreateProject = (projectData: { template: string, name: string; templateDesign: string; templateId: string | null; description: string }) => {
         console.log(projectData)
         const newProject = {
             id: (projects.length + 1).toString(),

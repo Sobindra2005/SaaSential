@@ -3,9 +3,10 @@ import React, { useState, useEffect } from 'react';
 import Container from '@/components/Layout/Container';
 import AfterLoginHeader from '@/components/Layout/AfterLogin/Dashboard/header';
 import SearchBar from '@/components/Common/searchBar';
-import {  GripHorizontal } from 'lucide-react';
+import { GripHorizontal } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 
 interface TemplateData {
     id: string;
@@ -35,6 +36,10 @@ const TemplatePage = () => {
     const [templates, setTemplates] = useState<TemplateData[]>(sampleTemplates);
     const [selectedTemplate, setSelectedTemplate] = useState<TemplateData | null>(null);
     const router = useRouter();
+    const params = useParams();
+    const slug = params.slug as string;
+
+
     useEffect(() => {
         const fetchTemplates = async () => {
             const response = await fetch('/api/templates');
@@ -66,9 +71,13 @@ const TemplatePage = () => {
     return (
         <>
             <AfterLoginHeader render={false} />
-
             <Container className="min-h-screen p-10 w-full mt-24 ml-24 text-center flex flex-col items-center">
-                <h1 className='text-4xl font-bold text-secondary'>Select the Site That Speaks to You</h1>
+                <h1 className='text-4xl font-bold text-secondary'>
+                    {slug === 'blog' && 'Create Your Professional Blog'}
+                    {slug === 'ecommerce' && 'Build Your Online Store'}
+                    {slug === 'portfolio' && 'Showcase Your Portfolio'}
+                    {!['blog', 'ecommerce', 'portfolio'].includes(slug) && 'Select the Site That Speaks to You'}
+                </h1>
                 <SearchBar placeholder='Search for your perfect template...' className='mt-6' />
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 w-full mt-24 capitalize">
@@ -76,7 +85,6 @@ const TemplatePage = () => {
                         <div
                             key={template.id}
                             className={`shadow-md relative text-white overflow-hidden  `}
-
                         >
                             <div className={`${selectedTemplate?.id === template.id ? 'border-2 border-blue-500' : ''}`}>
                                 <div className='w-full h-5 bg-gray-400 relative'>

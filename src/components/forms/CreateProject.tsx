@@ -76,7 +76,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
   });
   const [currentStep, setCurrentStep] = useState(0);
   const [stepValid, setStepValid] = useState(false);
-  const [isGenerating, setIsGenerating] = useState({name: false, description: false});
+  const [isGenerating, setIsGenerating] = useState({ name: false, description: false });
 
   const templates = [
     { id: 'portfolio', name: 'Portfolio', icon: FileUser },
@@ -330,7 +330,25 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40 text-white">
-        <div className="bg-[#141d2d] rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+        <div className="bg-[#141d2d] rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" style={{
+          scrollbarWidth: 'thin',
+          scrollbarColor: '#475569 #1e293b'
+        }}
+          css={`
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+    &::-webkit-scrollbar-track {
+      background: #1e293b;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: #475569;
+      border-radius: 20px;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: #64748b;
+    }
+  `}>
           <div className="px-6 py-4 flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold">{steps[currentStep].title}</h2>
