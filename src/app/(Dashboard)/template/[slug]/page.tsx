@@ -7,38 +7,39 @@ import { GripHorizontal } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
+import { templates } from '@/entities/templates';
 
 interface TemplateData {
     id: string;
     name: string;
+    component: string;
+    style: string;
     image: string;
 }
 
-const sampleTemplates: TemplateData[] = [
-    {
-        id: "1",
-        name: 'Blog Template',
-        image: 'https://cdn.prod.website-files.com/6009ec8cda7f305645c9d91b/66cca67ec447bd92b80d6521_646bbdd902be8595a4d0b7e9_Superlist.png',
-    },
-    {
-        id: "2",
-        name: 'Ecommerce Template',
-        image: 'https://i.pinimg.com/736x/f3/7c/ef/f37cef3dc1024d0dd884f4bb61c2423f.jpg',
-    },
-    {
-        id: "3",
-        name: 'Hotel template',
-        image: 'https://i.pinimg.com/236x/3c/a4/19/3ca4197154b515b3471863682a415c7a.jpg',
-    },
+const sampleTemplatesBLog: TemplateData[] = [
+    templates.blog.id1,
+    templates.blog.id2,
+    templates.blog.id3,
+];
+const sampleTemplatesEcommerce: TemplateData[] = [
+    templates.ecommerce.id1,
+    templates.ecommerce.id2,
+    templates.ecommerce.id3,
+];
+const sampleTemplatesProtofolio: TemplateData[] = [
+    templates.portfolio.id1,
+    templates.portfolio.id2,
 ];
 
 const TemplatePage = () => {
-    const [templates, setTemplates] = useState<TemplateData[]>(sampleTemplates);
+    const [templates, setTemplates] = useState<TemplateData[]>(sampleTemplatesProtofolio);
     const [selectedTemplate, setSelectedTemplate] = useState<TemplateData | null>(null);
+    const [click, setClick] = useState<number>(0);
+
     const router = useRouter();
     const params = useParams();
     const slug = params.slug as string;
-
 
     useEffect(() => {
         const fetchTemplates = async () => {
@@ -48,23 +49,30 @@ const TemplatePage = () => {
         };
 
         fetchTemplates();
-    }, []);
+    }, [slug]);
 
     useEffect(() => {
-        setTemplates(sampleTemplates);
+        if (slug === 'blog') {
+            setTemplates(sampleTemplatesBLog);
+        } else if (slug === 'ecommerce') {
+            setTemplates(sampleTemplatesEcommerce);
+        } else if (slug === 'portfolio') {
+            setTemplates(sampleTemplatesProtofolio);
+        }
     }, []);
 
     const handleTemplateClick = (template: TemplateData) => {
-        if (selectedTemplate === template) {
-            return setSelectedTemplate(null);
+        setClick(click + 1);
+        setSelectedTemplate(template);
+        if (click == 2) {
+            handleSelectButtonClick();
+            setClick(0);
         }
-        return setSelectedTemplate(template);
     };
 
     const handleSelectButtonClick = () => {
         if (selectedTemplate) {
-            router.push('/visualEditor')
-            console.log(`Selected template with id: ${selectedTemplate.id}`);
+            router.push(`/visualEditor/${selectedTemplate.id}`);
         }
     };
 

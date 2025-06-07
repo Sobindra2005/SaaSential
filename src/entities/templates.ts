@@ -1,6 +1,7 @@
 export const templates = {
     "blog": {
         "id1": {
+            id: "1",
             name: "Minal Blog ",
             component: `
       <header>
@@ -307,9 +308,11 @@ export const templates = {
               gap: 1rem;
           }
       }
-    `
+    `,
+            image: '/images/minimalBlog.png'
         },
         "id2": {
+            id: "2",
             name: "Tech Blog",
             component: `
              <header>
@@ -1015,9 +1018,12 @@ export const templates = {
                 grid-template-columns: 1fr;
                 text-align: center;
             }
-        }`
+        }`,
+            image: '/images/techProtofolio.png'
+
         },
         "id3": {
+            id: "3",
             name: "LifeStyle Blog",
             component: `    <header>
         <div class="container">
@@ -1785,13 +1791,15 @@ export const templates = {
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
-        }`
+        }`,
+            image: '/images/lifeblog.png'
         }
     }
 
     ,
     "ecommerce": {
         "id1": {
+            id: "4",
             name: "gadgetHub",
             component: `    <header>
         <nav class="container">
@@ -1932,7 +1940,7 @@ export const templates = {
             <p>&copy; 2025 TechHub. All rights reserved. | Premium gadgets for tech enthusiasts</p>
         </div>
     </footer>`,
-            styles: `        * {
+            style: `        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -2294,9 +2302,12 @@ export const templates = {
             .comparison-table {
                 font-size: 0.9rem;
             }
-        }`
+        }`,
+            image: '/images/techEcommerce.png'
+
         },
         "id2": {
+            id: "5",
             name: "gadgetHub",
             component: `<header>
         <nav>
@@ -2522,7 +2533,7 @@ export const templates = {
             </div>
         </div>
     </footer>`,
-            styles: `        * {
+            style: `        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -3078,9 +3089,11 @@ export const templates = {
             .newsletter-input {
                 border-right: 1px solid #ddd;
             }
-        }`
+        }`,
+            image: '/images/fashionEcommerce.png'
         },
         "id3": {
+            id: "6",
             name: 'handmade Crafts ',
             component: ` <header>
         <nav class="container">
@@ -3202,7 +3215,7 @@ export const templates = {
         </div>
     </section>
 `,
-            styles: `  * {
+            style: `  * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -3888,12 +3901,14 @@ export const templates = {
             .newsletter-button {
                 border-radius: 0 0 10px 10px;
             }
-        }`
+        }`,
+            image: '/images/handcraftEcommerce.png'
         }
     }
     ,
     "portfolio": {
         "id1": {
+            id: "7",
             name: 'SoundWave Studio - Premium Music Production',
             component: ` <header>
         <nav class="container">
@@ -4015,7 +4030,7 @@ export const templates = {
         </div>
     </section>
 `,
-            styles: ` * {
+            style: ` * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -4578,9 +4593,11 @@ export const templates = {
         .fade-in.visible {
             opacity: 1;
             transform: translateY(0);
-        }`
+        }`,
+            image: '/images/musicProtofolio.png'
         },
         "id2": {
+            id: "8",
             name: 'Alex Chen Photography - Professional Portfolio',
             component: `<body>
     <header>
@@ -4977,7 +4994,7 @@ export const templates = {
             </div>
         </div>
     </footer>`,
-            styles: `
+            style: `
 :root {
     --color-dark: #121212;
     --color-light: #ffffff;
@@ -5908,8 +5925,8 @@ footer {
     .pricing-item.featured {
         transform: none;
     }
-}`
+}`,
+            image: '/images/photographer.png'
         }
-
     }
 }

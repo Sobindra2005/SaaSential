@@ -53,7 +53,8 @@ const Home: React.FC = () => {
         setProjects([newProject, ...projects]);
         setShowWizard(false);
         if (projectData.templateDesign === 'ai') {
-            router.push('/visualEditor');
+            const data = { id: "5" }
+            router.push(`/visualEditor/${data.id}`);
         } else {
             router.push(`/template/${projectData.template}`);
         }

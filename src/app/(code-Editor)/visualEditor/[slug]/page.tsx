@@ -1,30 +1,54 @@
 'use client'
 import type { Editor } from 'grapesjs';
 import AfterLoginHeader from "@/components/Layout/AfterLogin/Dashboard/header";
-import GrapesJsStudio, {
-    // StudioCommands,
-    // ToastVariant,
-} from '@grapesjs/studio-sdk/react';
-
+import GrapesJsStudio from '@grapesjs/studio-sdk/react';
+import { useParams } from 'next/navigation';
 import '@grapesjs/studio-sdk/style';
 import Container from '@/components/Layout/Container';
-import { useState } from 'react';
 import { templates } from '@/entities/templates';
 
 
+interface TemplateData {
+    id: string;
+    name: string;
+    component: string;
+    style: string;
+    image: string;
+}
+
+const sampleTemplates: TemplateData[] = [
+    templates.blog.id1,
+    templates.blog.id2,
+    templates.blog.id3,
+    templates.ecommerce.id1,
+    templates.ecommerce.id2,
+    templates.ecommerce.id3,
+    templates.portfolio.id1,
+    templates.portfolio.id2,
+];
 
 const VisualEditor = () => {
-    const [editor, setEditor] = useState<Editor>();
+    const params = useParams();
+    const slug = params.slug as string;
 
-    const onReady = (editor: Editor) => {
-        console.log('Editor loaded', editor);
-        setEditor(editor);
-        // editor.loadProjectData({
-        //     pages:
-        //         templates.portfolio[1]
-        // });
+    const onReady = async (editor: Editor) => {
+        await fetchTemplates(editor);
     };
-    console.log(editor)
+
+    const fetchTemplates = async (editor: Editor) => {
+        const data = await sampleTemplates.find(template => template.id === slug) || sampleTemplates[0];
+
+        editor.loadProjectData({
+            pages: [
+                {
+                    name: data.name,
+                    component: data.component,
+                    styles: data.style,
+                }
+            ]
+        });
+    }
+
 
     // const showToast = (id: string) =>
     //     editor?.runCommand(StudioCommands.toastAdd, {
@@ -49,7 +73,6 @@ const VisualEditor = () => {
     // };
 
 
-
     return (
         <>
             <AfterLoginHeader render={false} />
@@ -58,15 +81,13 @@ const VisualEditor = () => {
                     style={{ minHeight: "100%" }}
                     onReady={onReady}
                     options={{
-                        licenseKey: process.env.GRAPES_PUBLIC_KEY as string,
+                        licenseKey: process.env.NEXT_PUBLIC_GRAPES_PUBLIC_KEY as string,
                         project: {
                             type: 'web',
                             default: {
                                 pages: [
                                     {
-                                        name: templates.portfolio.id2.name ,
-                                        Component: templates.portfolio.id2.component,
-                                        styles: templates.portfolio.id2.styles,
+
                                     },
                                 ],
                             },
