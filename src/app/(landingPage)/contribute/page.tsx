@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import Container from '@/components/Layout/Container';
 import AfterLoginHeader from '@/components/Layout/AfterLogin/Dashboard/header';
 import Input, { TextArea } from '@/components/Common/Input';
+import Image from 'next/image';
 
 
 type FormData = {
@@ -89,14 +90,17 @@ const ContributePage = () => {
                         >
                             {/* Show preview if image is selected, otherwise show upload icon */}
                             {watch('thumbnail') && watch('thumbnail')[0] ? (
-                                <div className="w-full flex flex-col items-center">
-                                    <img
+                                <>
+                                    <Image
                                         src={URL.createObjectURL(watch('thumbnail')[0])}
                                         alt="Thumbnail preview"
+                                        width={160}
+                                        height={160}
                                         className="max-h-40 object-contain mb-2"
                                     />
+                                
                                     <p className="text-sm text-gray-500">Click or drop to change image</p>
-                                </div>
+                               </>
                             ) : (
                                 <>
                                     <svg className="w-12 h-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -123,11 +127,11 @@ const ContributePage = () => {
                         type="submit"
                         className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                     >
-                        Submit Contribution
+                        {'Submit Contribution'}
                     </button>
 
                     <p className="text-sm text-gray-500 text-center">
-                        Thank you for contributing to SaaSential! We'll review your submission and get back to you soon.
+                        {"Thank you for contributing to SaaSential! We'll review your submission and get back to you soon."}
                     </p>
                 </form>
             </Container>

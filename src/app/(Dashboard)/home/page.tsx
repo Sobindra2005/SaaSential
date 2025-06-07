@@ -52,7 +52,11 @@ const Home: React.FC = () => {
         setNotification({ visible: true, });
         setProjects([newProject, ...projects]);
         setShowWizard(false);
-        projectData.templateDesign === 'ai' ? router.push('/visualEditor') : router.push(`/template/${projectData.template}`);
+        if (projectData.templateDesign === 'ai') {
+            router.push('/visualEditor');
+        } else {
+            router.push(`/template/${projectData.template}`);
+        }
     };
 
     const handleCloseNotification = () => {

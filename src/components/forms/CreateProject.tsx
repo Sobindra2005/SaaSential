@@ -334,21 +334,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
           scrollbarWidth: 'thin',
           scrollbarColor: '#475569 #1e293b'
         }}
-          css={`
-    &::-webkit-scrollbar {
-      width: 8px;
-    }
-    &::-webkit-scrollbar-track {
-      background: #1e293b;
-    }
-    &::-webkit-scrollbar-thumb {
-      background-color: #475569;
-      border-radius: 20px;
-    }
-    &::-webkit-scrollbar-thumb:hover {
-      background-color: #64748b;
-    }
-  `}>
+      >
           <div className="px-6 py-4 flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold">{steps[currentStep].title}</h2>

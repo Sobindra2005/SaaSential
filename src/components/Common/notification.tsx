@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export type NotificationType = 'default' | 'success' | 'error' | 'warning' | 'info';
@@ -26,10 +26,10 @@ export const Notification: React.FC<NotificationProps> = ({
         setVisible(isVisible);
     }, [isVisible]);
 
-    const handleClose = () => {
+    const handleClose = useCallback(() => {
         setVisible(false);
         if (onClose) onClose();
-    };
+    }, [onClose]);
 
 
     useEffect(() => {
@@ -40,7 +40,7 @@ export const Notification: React.FC<NotificationProps> = ({
 
             return () => clearTimeout(timer);
         }
-    }, [autoClose, visible, autoCloseTime]);
+    }, [autoClose, visible, autoCloseTime,handleClose]);
 
 
     if (!visible) return null;

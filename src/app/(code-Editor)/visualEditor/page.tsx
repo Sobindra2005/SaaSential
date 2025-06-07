@@ -10,7 +10,6 @@ import '@grapesjs/studio-sdk/style';
 import Container from '@/components/Layout/Container';
 import { useState } from 'react';
 import { templates } from '@/entities/templates';
-import { Component } from 'lucide-react';
 
 
 
@@ -59,7 +58,7 @@ const VisualEditor = () => {
                     style={{ minHeight: "100%" }}
                     onReady={onReady}
                     options={{
-                        licenseKey: '6b3f94ce8ffc4f0794a677517987a886c60c479ad1fa40f6812f007b3f2387c0',
+                        licenseKey: process.env.GRAPES_PUBLIC_KEY as string,
                         project: {
                             type: 'web',
                             default: {
