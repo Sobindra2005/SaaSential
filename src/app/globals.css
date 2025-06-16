@@ -77,6 +77,15 @@ body {
   animation-name: dot3_;
 }
 
+.carousel-row {
+    display: flex;
+    will-change: transform;
+}
+
+.carousel-item {
+    flex: 0 0 auto;
+}
+
 @keyframes dot1_ {
   3%,97% {
     width: 160px;
