@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { connectToDatabase } from '@/lib/mongodb';
-import { Template } from '@/models/Template';
+import { Project } from '@/models/Project';
 import { authOptions } from '@/lib/auth';
 
 export async function GET(
@@ -15,21 +15,18 @@ export async function GET(
         }
 
         await connectToDatabase();
-        const template = await Template.findOne({
+        const project = await Project.findOne({ 
             _id: params.id,
-            userId: session.user.id
+            userId: session.user.id 
         });
 
-        if (!template) {
-            return NextResponse.json(
-                { error: 'Template not found' },
-                { status: 404 }
-            );
+        if (!project) {
+            return NextResponse.json({ error: 'Project not found' }, { status: 404 });
         }
 
-        return NextResponse.json(template);
+        return NextResponse.json(project);
     } catch (error) {
-        console.error('Error fetching template:', error);
+        console.error('Error fetching project:', error);
         return NextResponse.json(
             { error: 'Internal Server Error' },
             { status: 500 }
@@ -50,22 +47,19 @@ export async function PUT(
         const body = await request.json();
         await connectToDatabase();
 
-        const template = await Template.findOneAndUpdate(
+        const project = await Project.findOneAndUpdate(
             { _id: params.id, userId: session.user.id },
-            body,
-            { new: true, runValidators: true }
+            { $set: body },
+            { new: true }
         );
 
-        if (!template) {
-            return NextResponse.json(
-                { error: 'Template not found' },
-                { status: 404 }
-            );
+        if (!project) {
+            return NextResponse.json({ error: 'Project not found' }, { status: 404 });
         }
 
-        return NextResponse.json(template);
+        return NextResponse.json(project);
     } catch (error) {
-        console.error('Error updating template:', error);
+        console.error('Error updating project:', error);
         return NextResponse.json(
             { error: 'Internal Server Error' },
             { status: 500 }
@@ -85,21 +79,18 @@ export async function DELETE(
         }
 
         await connectToDatabase();
-        const template = await Template.findOneAndDelete({
+        const project = await Project.findOneAndDelete({ 
             _id: params.id,
-            userId: session.user.id
+            userId: session.user.id 
         });
 
-        if (!template) {
-            return NextResponse.json(
-                { error: 'Template not found' },
-                { status: 404 }
-            );
+        if (!project) {
+            return NextResponse.json({ error: 'Project not found' }, { status: 404 });
         }
 
-        return NextResponse.json({ message: 'Template deleted successfully' });
+        return NextResponse.json({ message: 'Project deleted successfully' });
     } catch (error) {
-        console.error('Error deleting template:', error);
+        console.error('Error deleting project:', error);
         return NextResponse.json(
             { error: 'Internal Server Error' },
             { status: 500 }

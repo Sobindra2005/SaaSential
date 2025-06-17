@@ -1,4 +1,4 @@
-import NextAuth, { AuthOptions, Session, User, Profile } from "next-auth";
+import  { AuthOptions, Session, User, Profile } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -16,11 +16,7 @@ declare module "next-auth" {
   }
 }
 
-// Extend the Profile type to include id
-interface ExtendedProfile extends Profile {
-  id?: string;
-  sub?: string;
-}
+
 
 
 export const authOptions: AuthOptions = {

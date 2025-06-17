@@ -36,17 +36,17 @@ export async function apiRequest<T>(
 
 export const api = {
     get: <T>(endpoint: string) => apiRequest<T>(endpoint),
-    post: <T>(endpoint: string, data: any) =>
+    post: <T, D = Record<string, unknown>>(endpoint: string, data: D) =>
         apiRequest<T>(endpoint, {
             method: 'POST',
             body: JSON.stringify(data),
         }),
-    put: <T>(endpoint: string, data: any) =>
+    put: <T, D = Record<string, unknown>>(endpoint: string, data: D) =>
         apiRequest<T>(endpoint, {
             method: 'PUT',
             body: JSON.stringify(data),
         }),
-    delete: <T>(endpoint: string) =>
+    delete: <T, D = Record<string, unknown>>(endpoint: string, data: D) =>
         apiRequest<T>(endpoint, {
             method: 'DELETE',
         }),

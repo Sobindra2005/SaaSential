@@ -9,7 +9,6 @@ import { Notification } from '@/components/Common/notification';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Loader from '@/components/Common/loading/loader';
-import { templates } from '@/entities/templates';
 
 interface Project {
     _id: string;
