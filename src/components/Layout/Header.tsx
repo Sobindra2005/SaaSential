@@ -8,17 +8,20 @@ import { RxCross2 } from 'react-icons/rx';
 import Button from '../Common/Buttons';
 import { motion, AnimatePresence } from 'framer-motion';
 import Logo from '@/components/Common/Logo';
+import { useSession } from 'next-auth/react';
+import Image from 'next/image';
 
 export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+    const session = useSession();
+    console.log(session)
     return (
         <>
             <nav className="fixed w-full z-40  border-b border-gray-800 ">
                 <Container padding='px-3'>
                     <div className="flex justify-between bg-primary  h-16 items-center">
                         <div className={` font-bold text-xl gap-2`}>
-                            <div  className='flex items-center  gap-2'><Logo /> </div>
+                            <div className='flex items-center  gap-2'><Logo /> </div>
                         </div>
                         <div className="hidden md:flex space-x-8 rounded-full border border-gray-800 p-2 px-7  ">
                             <NavLink href="/#home">Product</NavLink>
@@ -27,11 +30,26 @@ export default function Navbar() {
                             <NavLink href="/#trainers">Resources</NavLink>
                             <NavLink href="/contribute">Contribute Templates</NavLink>
                         </div>
-
-                        <div className='flex gap-2 sm:gap-8 text-sm items-center justify-center '>
-                            <Link href={"/login"}> <button className='hover:text-purple-500 '>Login</button></Link>
-                            <Link href={"signup"}> <Button type='primary'>SignUp</Button></Link>
-                        </div>
+                        {session.data ? (
+                            <div className='flex items-center gap-4'>
+                                <Link href="/home">
+                                    <div className='flex items-center gap-2 cursor-pointer hover:bg-purple-600/10 p-2 rounded-lg transition-colors'>
+                                        <Image
+                                            src={session?.data?.user?.image  || '/default-avatar.png'}
+                                            alt={session?.data?.user?.name || 'User'}
+                                            width={40}
+                                            height={40}
+                                            className="rounded-full bg-purple-500"
+                                        />
+                                    </div>
+                                </Link>
+                            </div>
+                        ) : (
+                            <div className='flex gap-2 sm:gap-8 text-sm items-center justify-center'>
+                                <Link href={"/login"}> <button className='hover:text-purple-500'>Login</button></Link>
+                                <Link href={"signup"}> <Button type='primary'>SignUp</Button></Link>
+                            </div>
+                        )}
 
                         <div className="md:hidden">
                             <button

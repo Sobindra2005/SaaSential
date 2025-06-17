@@ -9,6 +9,8 @@ import Image from 'next/image';
 
 type FormData = {
     email: string;
+    projectName:string;
+    ProjectType:string;
     htmlCode: string;
     cssCode: string;
     thumbnail: FileList;
@@ -18,8 +20,33 @@ const ContributePage = () => {
     const { register, handleSubmit, formState: { errors }, watch } = useForm<FormData>();
 
     const onSubmit = (data: FormData) => {
-        console.log(data);
-        // Handle form submission
+        const loadTemplatesinBackend = async () => {
+            try {
+                const response = await fetch('/api/availableTemplates', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        projectName: data.projectName,
+                        projectType: data.ProjectType,
+                        html: data.htmlCode,
+                        css: data.cssCode,
+                        thumbnailImage: "/images/photographer.png"
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to create template');
+                }
+
+            } catch (error) {
+                console.error('Error fetching projects:', error);
+            }
+
+
+        }
+        loadTemplatesinBackend()
     };
 
     return (
@@ -38,9 +65,29 @@ const ContributePage = () => {
                         required
                     />
 
+                    <Input
+                        id="projectName"
+                        label="Project Name"
+                        type="text"
+                        placeholder="eg:folio"
+                        register={register}
+                        enabledSparkle={false}
+                        required
+                    />
+
+                    <Input
+                        id="ProjectType"
+                        label="Project Type"
+                        type="text"
+                        placeholder="eg:folio"
+                        register={register}
+                        enabledSparkle={false}
+                        required
+                    />
+
                     <div className="space-y-2">
                         <TextArea
-                            id="html-code"
+                            id="htmlCode"
                             label="HTML Code"
                             placeholder="<div>Your HTML code here...</div>"
                             isGenerating={false}
@@ -53,7 +100,7 @@ const ContributePage = () => {
 
                     <div className="space-y-2">
                         <TextArea
-                            id="css-code"
+                            id="cssCode"
                             label="CSS Code"
                             placeholder=""
                             isGenerating={false}
@@ -98,9 +145,9 @@ const ContributePage = () => {
                                         height={160}
                                         className="max-h-40 object-contain mb-2"
                                     />
-                                
+
                                     <p className="text-sm text-gray-500">Click or drop to change image</p>
-                               </>
+                                </>
                             ) : (
                                 <>
                                     <svg className="w-12 h-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

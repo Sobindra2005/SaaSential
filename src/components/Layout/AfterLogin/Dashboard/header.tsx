@@ -3,6 +3,7 @@ import { FaPlus, FaCog, FaSignOutAlt } from 'react-icons/fa';
 import Container from "../../Container";
 import Logo from "../../../Common/Logo";
 import Button from "../../../Common/Buttons";
+import { signOut } from 'next-auth/react';
 
 interface props {
     onCreate?: () => void,
@@ -33,7 +34,11 @@ const AfterLoginHeader: React.FC<props> = ({ onCreate, render = true }) => {
      
             <div className='flex items-center gap-5'>
                 <FaCog size={22} />
-                <FaSignOutAlt size={22} className='cursor-pointer' />
+                <FaSignOutAlt 
+                    size={22} 
+                    className='cursor-pointer hover:text-purple-500 transition-colors' 
+                    onClick={() => signOut({ callbackUrl: '/home' })}
+                />
             </div>
         </Container>
     );

@@ -2308,7 +2308,7 @@ export const templates = {
         },
         "id2": {
             id: "5",
-            name: "gadgetHub",
+            name: "LUXE",
             component: `<header>
         <nav>
             <div class="logo">LUXE</div>
@@ -3095,125 +3095,125 @@ export const templates = {
         "id3": {
             id: "6",
             name: 'handmade Crafts ',
-            component: ` <header>
-        <nav class="container">
-            <div class="logo">Artisan's Corner</div>
-            <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#products">Products</a></li>
-                <li><a href="#maker">Meet the Maker</a></li>
-                <li><a href="#process">Our Process</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
+                component: ` <header>
+            <nav class="container">
+                <div class="logo">Artisan's Corner</div>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#products">Products</a></li>
+                    <li><a href="#maker">Meet the Maker</a></li>
+                    <li><a href="#process">Our Process</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </header>
 
-    <section class="hero" id="home">
-        <div class="hero-content container">
-            <h1>Handcrafted with Love</h1>
-            <p>Unique, authentic pieces made by skilled artisans using traditional techniques</p>
-            <a href="#products" class="cta-button">Shop Our Collection</a>
-        </div>
-    </section>
-
-    <section class="featured-products" id="products">
-        <div class="container">
-            <h2 class="section-title">Featured Handmade Goods</h2>
-            <div class="products-grid">
-                <div class="product-card">
-                    <div class="product-image">🏺</div>
-                    <div class="product-info">
-                        <h3>Ceramic Vase Collection</h3>
-                        <div class="product-price">$89.99</div>
-                        <p>Hand-thrown ceramic vases with unique glazes. Each piece is one-of-a-kind, fired in our traditional kiln.</p>
-                        <button class="product-button">Add to Cart</button>
-                    </div>
-                </div>
-
-                <div class="product-card">
-                    <div class="product-image">🧺</div>
-                    <div class="product-info">
-                        <h3>Woven Baskets</h3>
-                        <div class="product-price">$45.99</div>
-                        <p>Natural fiber baskets woven using traditional techniques passed down through generations.</p>
-                        <button class="product-button">Add to Cart</button>
-                    </div>
-                </div>
-
-                <div class="product-card">
-                    <div class="product-image">🕯️</div>
-                    <div class="product-info">
-                        <h3>Soy Candles</h3>
-                        <div class="product-price">$24.99</div>
-                        <p>Hand-poured soy candles with natural fragrances. Made with organic cotton wicks and essential oils.</p>
-                        <button class="product-button">Add to Cart</button>
-                    </div>
-                </div>
-
-                <div class="product-card">
-                    <div class="product-image">🪵</div>
-                    <div class="product-info">
-                        <h3>Wooden Bowls</h3>
-                        <div class="product-price">$67.99</div>
-                        <p>Handcrafted wooden bowls made from sustainably sourced hardwood. Perfect for serving or display.</p>
-                        <button class="product-button">Add to Cart</button>
-                    </div>
-                </div>
-
-                <div class="product-card">
-                    <div class="product-image">🧶</div>
-                    <div class="product-info">
-                        <h3>Knitted Scarves</h3>
-                        <div class="product-price">$39.99</div>
-                        <p>Cozy hand-knitted scarves made from organic wool. Each scarf features unique patterns and colors.</p>
-                        <button class="product-button">Add to Cart</button>
-                    </div>
-                </div>
-
-                <div class="product-card">
-                    <div class="product-image">🖼️</div>
-                    <div class="product-info">
-                        <h3>Handmade Frames</h3>
-                        <div class="product-price">$52.99</div>
-                        <p>Rustic picture frames crafted from reclaimed wood. Each frame tells its own story through weathered textures.</p>
-                        <button class="product-button">Add to Cart</button>
-                    </div>
-                </div>
+        <section class="hero" id="home">
+            <div class="hero-content container">
+                <h1>Handcrafted with Love</h1>
+                <p>Unique, authentic pieces made by skilled artisans using traditional techniques</p>
+                <a href="#products" class="cta-button">Shop Our Collection</a>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section class="meet-maker" id="maker">
-        <div class="container">
-            <div class="maker-content">
-                <div class="maker-image">👩‍🎨</div>
-                <div class="maker-info">
-                    <h2>Meet Sarah</h2>
-                    <h3>Master Artisan & Founder</h3>
-                    <p>Hello! I'm Sarah, the heart and hands behind Artisan's Corner. My journey into crafting began over 15 years ago when I discovered the meditative joy of working with clay in my grandmother's studio.</p>
-                    
-                    <p>What started as a weekend hobby has blossomed into a passionate pursuit of creating beautiful, functional art pieces that bring warmth and character to homes around the world.</p>
-                    
-                    <p>Every piece I create is infused with love, attention to detail, and a deep respect for traditional crafting techniques. I believe that handmade goods carry a special energy that mass-produced items simply cannot match.</p>
-                    
-                    <div class="maker-stats">
-                        <div class="stat-item">
-                            <span class="stat-number">15+</span>
-                            <span class="stat-label">Years Experience</span>
+        <section class="featured-products" id="products">
+            <div class="container">
+                <h2 class="section-title">Featured Handmade Goods</h2>
+                <div class="products-grid">
+                    <div class="product-card">
+                        <div class="product-image">🏺</div>
+                        <div class="product-info">
+                            <h3>Ceramic Vase Collection</h3>
+                            <div class="product-price">$89.99</div>
+                            <p>Hand-thrown ceramic vases with unique glazes. Each piece is one-of-a-kind, fired in our traditional kiln.</p>
+                            <button class="product-button">Add to Cart</button>
                         </div>
-                        <div class="stat-item">
-                            <span class="stat-number">500+</span>
-                            <span class="stat-label">Happy Customers</span>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-image">🧺</div>
+                        <div class="product-info">
+                            <h3>Woven Baskets</h3>
+                            <div class="product-price">$45.99</div>
+                            <p>Natural fiber baskets woven using traditional techniques passed down through generations.</p>
+                            <button class="product-button">Add to Cart</button>
                         </div>
-                        <div class="stat-item">
-                            <span class="stat-number">1000+</span>
-                            <span class="stat-label">Pieces Created</span>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-image">🕯️</div>
+                        <div class="product-info">
+                            <h3>Soy Candles</h3>
+                            <div class="product-price">$24.99</div>
+                            <p>Hand-poured soy candles with natural fragrances. Made with organic cotton wicks and essential oils.</p>
+                            <button class="product-button">Add to Cart</button>
+                        </div>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-image">🪵</div>
+                        <div class="product-info">
+                            <h3>Wooden Bowls</h3>
+                            <div class="product-price">$67.99</div>
+                            <p>Handcrafted wooden bowls made from sustainably sourced hardwood. Perfect for serving or display.</p>
+                            <button class="product-button">Add to Cart</button>
+                        </div>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-image">🧶</div>
+                        <div class="product-info">
+                            <h3>Knitted Scarves</h3>
+                            <div class="product-price">$39.99</div>
+                            <p>Cozy hand-knitted scarves made from organic wool. Each scarf features unique patterns and colors.</p>
+                            <button class="product-button">Add to Cart</button>
+                        </div>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-image">🖼️</div>
+                        <div class="product-info">
+                            <h3>Handmade Frames</h3>
+                            <div class="product-price">$52.99</div>
+                            <p>Rustic picture frames crafted from reclaimed wood. Each frame tells its own story through weathered textures.</p>
+                            <button class="product-button">Add to Cart</button>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+
+        <section class="meet-maker" id="maker">
+            <div class="container">
+                <div class="maker-content">
+                    <div class="maker-image">👩‍🎨</div>
+                    <div class="maker-info">
+                        <h2>Meet Sarah</h2>
+                        <h3>Master Artisan & Founder</h3>
+                        <p>Hello! I'm Sarah, the heart and hands behind Artisan's Corner. My journey into crafting began over 15 years ago when I discovered the meditative joy of working with clay in my grandmother's studio.</p>
+                        
+                        <p>What started as a weekend hobby has blossomed into a passionate pursuit of creating beautiful, functional art pieces that bring warmth and character to homes around the world.</p>
+                        
+                        <p>Every piece I create is infused with love, attention to detail, and a deep respect for traditional crafting techniques. I believe that handmade goods carry a special energy that mass-produced items simply cannot match.</p>
+                        
+                        <div class="maker-stats">
+                            <div class="stat-item">
+                                <span class="stat-number">15+</span>
+                                <span class="stat-label">Years Experience</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">500+</span>
+                                <span class="stat-label">Happy Customers</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">1000+</span>
+                                <span class="stat-label">Pieces Created</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 `,
             style: `  * {
             margin: 0;
@@ -5930,3 +5930,5 @@ footer {
         }
     }
 }
+
+

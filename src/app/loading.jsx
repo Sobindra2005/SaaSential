@@ -1,17 +1,13 @@
+import Container from '@/components/Layout/Container';
+
+
 export default function Loader() {
   return (
-    <div className="fixed inset-0 bg-primary flex items-center justify-center">
-      <div className="loader-container">
-        <div className="loader">
-          <span className="loader-text"></span>
-        </div>
-        <div className="loader">
-          <span className="loader-text loader-text-small">Saa<span className="text-secondary">Sential</span></span>
-        </div>
-        <div className="loader">
-          <span className="loader-text loader-text-tiny"></span>
-        </div>
+    <Container className="flex items-center justify-center min-h-screen">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary mx-auto"></div>
+        <p className="mt-4 text-secondary">Loading...</p>
       </div>
-    </div>
+    </Container>
   );
 }
