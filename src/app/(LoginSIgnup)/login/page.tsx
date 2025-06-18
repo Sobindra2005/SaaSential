@@ -118,7 +118,7 @@ const Login: React.FC = () => {
 
     const handleGoogleSignLogin = () => {
         const callbackUrl = searchParams.get('callbackUrl') || '/home';
-        signIn('google', { callbackUrl });
+        signIn('google', { callbackUrl});
     };
 
     const handleGithubSignLogin = () => {
