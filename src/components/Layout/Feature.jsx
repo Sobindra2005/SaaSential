@@ -12,7 +12,7 @@ const Feature = () => {
                 initial={{ opacity: 0, }}
                 whileInView={{ opacity: 1, }}
                 transition={{
-                    delay:0.1,
+                    delay: 0.1,
                     duration: 0.7,
                     ease: "easeInOut"
                 }}> <Button type='tertiary'>Features</Button></motion.div>
@@ -20,7 +20,7 @@ const Feature = () => {
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{
-                    delay:0.1,
+                    delay: 0.1,
                     duration: 0.7,
                     ease: "easeInOut"
                 }}
@@ -37,12 +37,13 @@ const Feature = () => {
                 }}
                 className=' flex bg-gradient-to-b from-[#282637] to-[#030014] relative p-2 mt-4 rounded-xl '>
                 <div className="overflow-hidden rounded-lg">
-                    <Image 
+                    <Image
+                        unoptimized
                         src="/feature.png"
-                        width={500} 
-                        height={800} 
-                        alt="website ready within a minute" 
-                        className='w-[35rem] h-[25rem] object-cover object-center mask-image' 
+                        width={500}
+                        height={800}
+                        alt="website ready within a minute"
+                        className='w-[35rem] h-[25rem] object-cover object-center mask-image'
                         style={{
                             maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 85%, rgba(0,0,0,0))',
                             WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 85%, rgba(0,0,0,0))'
