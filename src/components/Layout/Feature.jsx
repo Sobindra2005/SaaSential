@@ -38,7 +38,6 @@ const Feature = () => {
                 className=' flex bg-gradient-to-b from-[#282637] to-[#030014] relative p-2 mt-4 rounded-xl '>
                 <div className="overflow-hidden rounded-lg">
                     <Image
-                        unoptimized
                         src="/feature.png"
                         width={500}
                         height={800}
@@ -48,6 +47,8 @@ const Feature = () => {
                             maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 85%, rgba(0,0,0,0))',
                             WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 85%, rgba(0,0,0,0))'
                         }}
+                        unoptimized
+                        priority
                     />
                 </div>
             </motion.div>

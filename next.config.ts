@@ -65,7 +65,9 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
-    ]
+    ],
+    domains: ['localhost'],
+    unoptimized: true
   }
 };
 
