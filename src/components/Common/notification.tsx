@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export type NotificationType = 'default' | 'success' | 'error' | 'warning' | 'info';
 
 interface NotificationProps {
-    type?: NotificationType;
+    type?: 'default' | 'success' | 'error' | 'warning' | 'info' | string ;
     message: string;
     isVisible: boolean;
     onClose?: () => void;

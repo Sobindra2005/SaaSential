@@ -62,6 +62,7 @@ export async function POST(request: Request) {
                 html: randomTemplate.html,
                 css: randomTemplate.css,
                 userId: session.user.id,
+                projectImage:randomTemplate.thumbnailImage
             });
 
             const savedProject = await project.save();

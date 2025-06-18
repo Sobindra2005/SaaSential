@@ -1,23 +1,25 @@
 "use client"
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Container from '@/components/Layout/Container';
 import AfterLoginHeader from '@/components/Layout/AfterLogin/Dashboard/header';
 import Input, { TextArea } from '@/components/Common/Input';
 import Image from 'next/image';
+import { Notification } from '@/components/Common/notification';
 
 
 type FormData = {
     email: string;
-    projectName:string;
-    ProjectType:string;
+    projectName: string;
+    ProjectType: string;
     htmlCode: string;
     cssCode: string;
     thumbnail: FileList;
 };
 
 const ContributePage = () => {
-    const { register, handleSubmit, formState: { errors }, watch } = useForm<FormData>();
+    const { register, handleSubmit, formState: { errors }  ,reset} = useForm<FormData>();
+    const [notification, setNotification] = useState({ visible: false, message: '', type: 'sucess' });
 
     const onSubmit = (data: FormData) => {
         const loadTemplatesinBackend = async () => {
@@ -32,13 +34,27 @@ const ContributePage = () => {
                         projectType: data.ProjectType,
                         html: data.htmlCode,
                         css: data.cssCode,
-                        thumbnailImage: "/images/photographer.png"
+                        thumbnailImage: "https://res.cloudinary.com/dz7oo3hci/image/upload/v1750249752/undraw_user-account_fvqa_nmu6do.png"
                     })
                 });
 
                 if (!response.ok) {
                     throw new Error('Failed to create template');
                 }
+
+                setNotification({
+                    visible: true,
+                    message: 'Your template has been submitted. Stay tuned!',
+                    type: 'success'
+                });
+                
+                reset({
+                    ProjectType: '',
+                    cssCode: '',
+                    email: '',
+                    projectName: '',
+                    htmlCode:''
+                });
 
             } catch (error) {
                 console.error('Error fetching projects:', error);
@@ -49,10 +65,24 @@ const ContributePage = () => {
         loadTemplatesinBackend()
     };
 
+    const handleCloseNotification = () => {
+        setNotification(prev => ({ ...prev, visible: false }));
+    };
+
     return (
         <>
             <AfterLoginHeader render={false} />
             <Container className="min-h-screen p-10 w-full mt-24 text-center flex flex-col items-center">
+                <div className="fixed top-5 right-5 z-50">
+                    <Notification
+                        type={notification.type}
+                        message={notification.message}
+                        isVisible={notification.visible}
+                        onClose={handleCloseNotification}
+                        autoClose={true}
+                        autoCloseTime={4000}
+                    />
+                </div>
                 <h1 className="text-3xl font-bold mb-8">Contribute to SaaSential</h1>
                 <form className="space-y-6 text-left" onSubmit={handleSubmit(onSubmit)}>
                     <Input
@@ -111,7 +141,7 @@ const ContributePage = () => {
                         />
                     </div>
 
-                    <div className="space-y-2">
+                    {/* <div className="space-y-2">
                         <label htmlFor="thumbnail" className="block text-sm font-medium">
                             Thumbnail Image
                         </label>
@@ -135,7 +165,7 @@ const ContributePage = () => {
                                 e.preventDefault();
                             }}
                         >
-                            {/* Show preview if image is selected, otherwise show upload icon */}
+                        
                             {watch('thumbnail') && watch('thumbnail')[0] ? (
                                 <>
                                     <Image
@@ -168,7 +198,7 @@ const ContributePage = () => {
                                 <p className="mt-1 text-sm text-red-600">{errors.thumbnail.message?.toString()}</p>
                             )}
                         </div>
-                    </div>
+                    </div> */}
 
                     <button
                         type="submit"

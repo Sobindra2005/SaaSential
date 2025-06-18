@@ -24,7 +24,7 @@ const Login: React.FC = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { data: session, status } = useSession();
-    const [notification, setNotification] = useState({ visible: false, message: '', type: 'error' as const });
+    const [notification, setNotification] = useState({ visible: false, message: '', type:'success'});
     const [isLoading, setIsLoading] = useState(false);
 
     const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
@@ -67,7 +67,7 @@ const Login: React.FC = () => {
     const handleLogin: SubmitHandler<LoginFormData> = async (data) => {
         try {
             setIsLoading(true);
-        
+
             // First try to login directly with the backend
             const loginResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
                 method: 'POST',
@@ -101,6 +101,11 @@ const Login: React.FC = () => {
                     type: 'error'
                 });
             } else if (result?.ok) {
+                setNotification({
+                    visible: true,
+                    message: "successfully authenticated",
+                    type: 'success'
+                });
                 const callbackUrl = searchParams.get('callbackUrl') || '/home';
                 router.push(callbackUrl);
             }
@@ -118,7 +123,7 @@ const Login: React.FC = () => {
 
     const handleGoogleSignLogin = () => {
         const callbackUrl = searchParams.get('callbackUrl') || '/home';
-        signIn('google', { callbackUrl});
+        signIn('google', { callbackUrl });
     };
 
     const handleGithubSignLogin = () => {

@@ -64,7 +64,8 @@ const TemplatePage = () => {
                     },
                     body: JSON.stringify({
                         html:selectedTemplate.html,
-                        css:selectedTemplate.css
+                        css:selectedTemplate.css,
+                        projectImage:selectedTemplate.thumbnailImage
                     }),
                 });
 
