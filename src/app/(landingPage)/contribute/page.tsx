@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form';
 import Container from '@/components/Layout/Container';
 import AfterLoginHeader from '@/components/Layout/AfterLogin/Dashboard/header';
 import Input, { TextArea } from '@/components/Common/Input';
-import Image from 'next/image';
 import { Notification } from '@/components/Common/notification';
 
 
@@ -18,7 +17,7 @@ type FormData = {
 };
 
 const ContributePage = () => {
-    const { register, handleSubmit, formState: { errors }  ,reset} = useForm<FormData>();
+    const { register, handleSubmit,reset} = useForm<FormData>();
     const [notification, setNotification] = useState({ visible: false, message: '', type: 'sucess' });
 
     const onSubmit = (data: FormData) => {
@@ -47,7 +46,7 @@ const ContributePage = () => {
                     message: 'Your template has been submitted. Stay tuned!',
                     type: 'success'
                 });
-                
+
                 reset({
                     ProjectType: '',
                     cssCode: '',
