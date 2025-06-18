@@ -38,7 +38,7 @@ const Feature = () => {
                 className=' flex bg-gradient-to-b from-[#282637] to-[#030014] relative p-2 mt-4 rounded-xl '>
                 <div className="overflow-hidden rounded-lg">
                     <Image 
-                        src="/images/feature.png" 
+                        src="/feature.png"
                         width={500} 
                         height={800} 
                         alt="website ready within a minute" 
