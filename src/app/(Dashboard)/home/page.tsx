@@ -32,14 +32,14 @@ const Home: React.FC = () => {
                     throw new Error('Failed to fetch projects');
                 }
                 const data = await response.json();
-                const simplifiedProjects = data.map((project: any) => ({
+                const simplifiedProjects = data.map((project: Project) => ({
                     _id: project._id,
                     projectName: project.projectName,
                     projectImage: project.projectImage,
                     description: project.description,
                     lastModified: project.lastModified
                 }));
-                console.log(response)
+
                 setProjects(simplifiedProjects);
             } catch (error) {
                 console.error('Error fetching projects:', error);
@@ -53,7 +53,7 @@ const Home: React.FC = () => {
 
     const handleCreateProject = async (projectData: { template: string, name: string; templateDesign: string; templateId: string | null; description: string }) => {
         try {
-            const response = await fetch('/api/userProjects', {
+            const response = await fetch(`/api/userProjects?type=${projectData.templateDesign}&&template=${projectData.template}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -86,9 +86,9 @@ const Home: React.FC = () => {
             setShowWizard(false);
 
             if (projectData.templateDesign === 'ai') {
-                router.push(`/visualEditor/${newProject._id}`);
+                router.push(`/visualEditor/${newProject._id}?data=${newProject._id}`);
             } else {
-                router.push(`/template/${projectData.template}`);
+                router.push(`/template/${projectData.template}?data=choose-${newProject._id}`);
             }
         } catch (error) {
             console.error('Error creating project:', error);

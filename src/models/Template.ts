@@ -37,6 +37,6 @@ const AvailableTemplateSchema = new mongoose.Schema({
 AvailableTemplateSchema.pre('save', function(next) {
     this.updatedAt = new Date();
     next();
-});
+})
 
-export const Template = mongoose.models.Template || mongoose.model('AvailableTemplates', AvailableTemplateSchema);
+export const Template = mongoose.models.AvailableTemplates || mongoose.model('AvailableTemplates', AvailableTemplateSchema);

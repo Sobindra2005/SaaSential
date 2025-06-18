@@ -1,136 +1,97 @@
 'use client'
-import type { Editor } from 'grapesjs';
+import { Editor } from 'grapesjs';
 import AfterLoginHeader from "@/components/Layout/AfterLogin/Dashboard/header";
 import GrapesJsStudio from '@grapesjs/studio-sdk/react';
 import { useParams } from 'next/navigation';
 import '@grapesjs/studio-sdk/style';
 import Container from '@/components/Layout/Container';
-import { templates } from '@/entities/templates';
+import { api } from '@/utils/api';
 import { useEffect, useState } from 'react';
 
 interface TemplateData {
-    id: string;
-    name: string;
-    component: string;
-    style: string;
-    image: string;
+    _id: string;
+    projectName: string;
+    projectType: string;
+    html: string;
+    css: string;
+    thumbnailImage: string;
+    updatedAt: string
 }
-
-const sampleTemplates: TemplateData[] = [
-    templates.blog.id1,
-    templates.blog.id2,
-    templates.blog.id3,
-    templates.ecommerce.id1,
-    templates.ecommerce.id2,
-    templates.ecommerce.id3,
-    templates.portfolio.id1,
-    templates.portfolio.id2,
-];
 
 const VisualEditor = () => {
     const params = useParams();
     const slug = params.slug as string;
+    const [currentProject, setCurrentProject] = useState<TemplateData | null>(null);
     const [editor, setEditor] = useState<Editor | null>(null);
 
-    const onReady = async (editor: Editor) => {
-        setEditor(editor);
-        await fetchTemplates(editor);
-    };
-
-    const fetchTemplates = async (editor: Editor) => {
+    const fetchData = async () => {
         try {
-            const response = await fetch(`/api/userProjects/${slug}`);
-            if (response.ok) {
-                const projectData = await response.json();
-                if (projectData.html && projectData.css) {
-                    editor.loadProjectData({
-                        pages: [
-                            {
-                                name: projectData.projectName,
-                                component: projectData.html,
-                                styles: projectData.css,
-                            }
-                        ]
-                    });
-                    return;
-                }
+            const ownProjects = await api.get(`/api/userProjects/${slug}`);
+            let response = ownProjects;
+
+            if (ownProjects.status == 404) {
+                const template = await api.get(`/api/availableTemplates/${slug}`);
+                response = template;
             }
-            
-            const data = await sampleTemplates.find(template => template.id === slug) || sampleTemplates[0];
-            editor.loadProjectData({
-                pages: [
-                    {
-                        name: data.name,
-                        component: data.component,
-                        styles: data.style,
-                    }
-                ]
-            });
+
+            setCurrentProject(response.data as TemplateData);
+            return response.data;
         } catch (error) {
-            console.error('Error loading project:', error);
+            console.error('Error fetching data:', error);
+            return null;
         }
     };
 
-    const updateProject = async () => {
-        if (!editor) return;
+    const loadProjectIntoEditor = (editor: Editor, projectData: TemplateData) => {
+        editor.loadProjectData({
+            pages: [
+                {
+                    name: projectData.projectName,
+                    component: projectData.html,
+                    styles: projectData.css,
+                }
+            ]
+        });
+    };
 
-        try {
-            const html = editor.getHtml();
-            const css = editor.getCss();
-
-            const response = await fetch(`/api/userProjects/${slug}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    html,
-                    css
-                }),
-            });
-            
-
-            if (!response.ok) {
-                throw new Error('Failed to update project');
-            }
-
-            console.log('Project updated successfully');
-        } catch (error) {
-            console.error('Error updating project:', error);
+    const onReady = async (editorInstance: Editor) => {
+        setEditor(editorInstance);
+        if (currentProject) {
+            loadProjectIntoEditor(editorInstance, currentProject);
         }
     };
 
     useEffect(() => {
-        if (!editor) return;
+        fetchData();
+    }, [slug]);
 
-        const autoSaveInterval = setInterval(() => {
-            updateProject();
-        }, 30000);
+    useEffect(() => {
+        if (editor && currentProject) {
+            setTimeout(() => {
+                loadProjectIntoEditor(editor, currentProject);
+                editor?.on('update', () => {
+                    if (currentProject) {
+                        updateData(editor, currentProject);
+                    }
+                });
+            }, 100);
+        }
+    }, [editor, currentProject, fetchData])
 
-        return () => clearInterval(autoSaveInterval);
-    }, [editor]);
 
-    // const showToast = (id: string) =>
-    //     editor?.runCommand(StudioCommands.toastAdd, {
-    //         id,
-    //         header: 'Toast header',
-    //         content: 'Data logged in console',
-    //         variant: ToastVariant.Info,
-    //     });
 
-    // const getProjetData = () => {
-    //     if (editor) {
-    //         console.log({ projectData: editor?.getProjectData() });
-    //         showToast('log-project-data');
-    //     }
-    // };
-
-    // const getExportData = () => {
-    //     if (editor) {
-    //         console.log({ html: editor?.getHtml(), css: editor?.getCss() });
-    //         showToast('log-html-css');
-    //     }
-    // };
+    const updateData = async (editorInstance: Editor, currentProject: TemplateData) => {
+        console.log(editor)
+        const html = editorInstance.getHtml();
+        const css = editorInstance.getCss();
+        const response = await api.put(`/api/userProjects/${currentProject._id}`, {
+            html: html,
+            css: css
+        });
+        if (response.status !== 200) {
+            throw new Error('Failed to update project');
+        }
+    }
 
     return (
         <>
@@ -139,7 +100,6 @@ const VisualEditor = () => {
                 <GrapesJsStudio
                     style={{ minHeight: "100%" }}
                     onReady={onReady}
-                    onUpdate={updateProject}
                     options={{
                         licenseKey: process.env.NEXT_PUBLIC_GRAPES_PUBLIC_KEY as string,
                         project: {
@@ -147,7 +107,9 @@ const VisualEditor = () => {
                             default: {
                                 pages: [
                                     {
-                                        // Default empty page
+                                        name: 'Main page',
+                                        component: currentProject?.html || '<div>Loading...</div>',
+                                        styles: currentProject?.css || '',
                                     },
                                 ],
                             },

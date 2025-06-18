@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { connectToDatabase } from '@/lib/mongodb';
 import { Project } from '@/models/Project';
 import { authOptions } from '@/lib/auth';
+import { Template } from '@/models/Template';
 
 // GET /api/userProjects
 export async function GET() {
@@ -15,7 +16,7 @@ export async function GET() {
         await connectToDatabase();
         const projects = await Project.find({ userId: session.user.id })
             .sort({ lastModified: -1 }); // Sort by last modified date, newest first
-        
+
         return NextResponse.json(projects);
     } catch (error) {
         console.error('Error fetching projects:', error);
@@ -33,14 +34,43 @@ export async function POST(request: Request) {
         if (!session) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
+        const { searchParams } = new URL(request.url);
+        const type = searchParams.get('type');
+        const template = searchParams.get('template');
 
         const body = await request.json();
         await connectToDatabase();
 
+        if (type === 'ai') {
+            const availableTemplates = await Template.find({
+                projectType: template
+            });
+
+
+            if (availableTemplates.length === 0) {
+                return NextResponse.json(
+                    { error: 'No templates found for the specified type' },
+                    { status: 404 }
+                );
+            }
+
+            const randomTemplate = availableTemplates[Math.floor(Math.random() * availableTemplates.length)];
+
+
+            const project = new Project({
+                ...body,
+                html: randomTemplate.html,
+                css: randomTemplate.css,
+                userId: session.user.id,
+            });
+
+            const savedProject = await project.save();
+            return NextResponse.json(savedProject, { status: 201 });
+        }
+
         const project = new Project({
             ...body,
             userId: session.user.id,
-            projectImage: body.projectImage || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80'
         });
 
         const savedProject = await project.save();

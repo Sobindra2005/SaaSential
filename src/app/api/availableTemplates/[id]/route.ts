@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { connectToDatabase } from '@/lib/mongodb';
-import { Project } from '@/models/Project';
 import { authOptions } from '@/lib/auth';
+import { Template } from '@/models/Template';
 
 export async function GET(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }:{ params: Promise<{ id: string }> }
 ) {
     try {
         const session = await getServerSession(authOptions);
@@ -15,10 +15,12 @@ export async function GET(
         }
 
         await connectToDatabase();
-        const project = await Project.findOne({ 
-            _id: params.id,
-            userId: session.user.id 
+        const { id } = await params;
+
+        const project = await Template.findOne({ 
+            _id: id,
         });
+
 
         if (!project) {
             return NextResponse.json({ error: 'Project not found' }, { status: 404 });
@@ -36,7 +38,7 @@ export async function GET(
 
 export async function PUT(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const session = await getServerSession(authOptions);
@@ -46,9 +48,9 @@ export async function PUT(
 
         const body = await request.json();
         await connectToDatabase();
-
-        const project = await Project.findOneAndUpdate(
-            { _id: params.id, userId: session.user.id },
+        const { id } = await params;
+        const project = await Template.findOneAndUpdate(
+            { _id: id},
             { $set: body },
             { new: true }
         );
@@ -70,7 +72,7 @@ export async function PUT(
 // DELETE /api/templates/[id]
 export async function DELETE(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }>}
 ) {
     try {
         const session = await getServerSession(authOptions);
@@ -79,8 +81,9 @@ export async function DELETE(
         }
 
         await connectToDatabase();
-        const project = await Project.findOneAndDelete({ 
-            _id: params.id,
+        const { id } = await params;
+        const project = await Template.findOneAndDelete({ 
+            _id: id,
             userId: session.user.id 
         });
 

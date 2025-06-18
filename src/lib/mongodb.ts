@@ -3,8 +3,6 @@ import mongoose from 'mongoose';
 // Use server-side environment variable instead of client-side
 const MONGODB_URI = process.env.MONGODB_URI!;
 
-console.log("========",MONGODB_URI)
-
 if (!MONGODB_URI) {
     throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
 }
@@ -15,17 +13,14 @@ interface MongooseCache {
     promise: Promise<typeof mongoose> | null;
 }
 
-// Use proper type assertion
-declare global {
-    var mongoose: MongooseCache | undefined;
-}
+// Create a type-safe global cache
+const globalMongoose = {
+    conn: null as typeof mongoose | null,
+    promise: null as Promise<typeof mongoose> | null
+};
 
 // Initialize cached connection
-const cached: MongooseCache = global.mongoose || { conn: null, promise: null };
-
-if (!global.mongoose) {
-    global.mongoose = cached;
-}
+const cached: MongooseCache = globalMongoose;
 
 export async function connectToDatabase(): Promise<typeof mongoose> {
     // Return existing connection if available

@@ -1,8 +1,9 @@
-import  { AuthOptions, Session, User, Profile } from "next-auth";
+import  { Account, AuthOptions, Session, User } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { JWT } from "next-auth/jwt";
+import { AdapterUser } from "next-auth/adapters";
 
 // Extend the built-in session types
 declare module "next-auth" {
@@ -12,6 +13,7 @@ declare module "next-auth" {
       email: string;
       name: string;
       provider?: string;
+      image?:string
     }
   }
 }
@@ -30,7 +32,7 @@ export const authOptions: AuthOptions = {
       async authorize(credentials) {
         try {
           if (!credentials?.email || !credentials?.password) {
-            console.log('Missing credentials');
+  
             throw new Error('Email and password are required');
           }
 
@@ -108,7 +110,7 @@ export const authOptions: AuthOptions = {
   
       return true;
     },
-    async jwt({ token, user, account }: { token: JWT; user?: User; account?: any }) {
+    async jwt({ token, user, account }: { token: JWT; user: User | AdapterUser; account: Account | null }) {
       if (user) {
         token.id = user.id;
         token.email = user.email;

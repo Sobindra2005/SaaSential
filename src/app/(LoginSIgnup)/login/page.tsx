@@ -67,8 +67,7 @@ const Login: React.FC = () => {
     const handleLogin: SubmitHandler<LoginFormData> = async (data) => {
         try {
             setIsLoading(true);
-            console.log('Attempting login with:', { email: data.email });
-            
+        
             // First try to login directly with the backend
             const loginResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
                 method: 'POST',
@@ -82,7 +81,6 @@ const Login: React.FC = () => {
             });
 
             const loginData = await loginResponse.json();
-            console.log('Backend login response:', { status: loginResponse.status, data: loginData });
 
             if (!loginResponse.ok) {
                 throw new Error(loginData.message || 'Login failed');
@@ -95,7 +93,6 @@ const Login: React.FC = () => {
                 password: data.password,
             });
 
-            console.log('NextAuth sign in result:', result);
 
             if (result?.error) {
                 setNotification({

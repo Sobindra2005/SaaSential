@@ -61,7 +61,7 @@ export function PricingCard() {
             animatedBorder.style.width = `${targetBtn.offsetWidth}px`
             animatedBorder.style.transform = `translateX(${billingPeriod === "monthly" ? 0 : monthlyBtnRef.current?.offsetWidth || 0}px)`
         }
-    }, [])
+    }, [billingPeriod,isAnimating])
 
     return (
         <Container padding="0px" className="flex items-center justify-center">

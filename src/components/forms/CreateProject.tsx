@@ -81,7 +81,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
   const templates = [
     { id: 'portfolio', name: 'Portfolio', icon: FileUser },
     { id: 'blog', name: 'Blog', icon: NotebookPen },
-    { id: 'E-commerce', name: 'E-commerce', icon: ShoppingBag }
+    { id: 'ecommerce', name: 'E-commerce', icon: ShoppingBag }
   ];
 
   const projectData = watch();

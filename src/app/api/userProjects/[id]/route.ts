@@ -7,17 +7,18 @@ import { authOptions } from '@/lib/auth';
 // GET /api/userProjects/[id]
 export async function GET(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const session = await getServerSession(authOptions);
         if (!session) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
-
         await connectToDatabase();
+        const { id } = await params;
+        console.log(id)
         const project = await Project.findOne({
-            _id: params.id,
+            _id: id,
             userId: session.user.id
         });
 
@@ -41,7 +42,7 @@ export async function GET(
 // PUT /api/userProjects/[id]
 export async function PUT(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const session = await getServerSession(authOptions);
@@ -52,9 +53,11 @@ export async function PUT(
         const body = await request.json();
         await connectToDatabase();
 
+        const { id } = await params
+       
         const project = await Project.findOneAndUpdate(
-            { _id: params.id, userId: session.user.id },
-            { ...body, lastModified: new Date() },
+            { _id: id, userId: session.user.id },
+            { ...body },
             { new: true, runValidators: true }
         );
 
@@ -78,7 +81,7 @@ export async function PUT(
 // DELETE /api/userProjects/[id]
 export async function DELETE(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }:{ params: Promise<{ id: string }> }
 ) {
     try {
         const session = await getServerSession(authOptions);
@@ -87,8 +90,9 @@ export async function DELETE(
         }
 
         await connectToDatabase();
+        const { id } = await params;
         const project = await Project.findOneAndDelete({
-            _id: params.id,
+            _id:id,
             userId: session.user.id
         });
 

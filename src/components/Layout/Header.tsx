@@ -14,7 +14,7 @@ import Image from 'next/image';
 export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const session = useSession();
-    console.log(session)
+
     return (
         <>
             <nav className="fixed w-full z-40  border-b border-gray-800 ">

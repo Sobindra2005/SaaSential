@@ -5,16 +5,20 @@ import { Template } from '@/models/Template';
 import { authOptions } from '@/lib/auth';
 
 // GET /api/templates
-export async function GET() {
+export async function GET(request: Request) {
     try {
         const session = await getServerSession(authOptions);
         if (!session) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
+        const { searchParams } = new URL(request.url);
+        const type = searchParams.get('type');
+
         await connectToDatabase();
-        const templates = await Template.find({ userId: session.user.id });
-        
+        const query = type ? { projectType : type } : {};
+        const templates = await Template.find(query);
+
         return NextResponse.json(templates);
     } catch (error) {
         console.error('Error fetching templates:', error);
@@ -39,7 +43,6 @@ export async function POST(request: Request) {
 
         const template = new Template({
             ...body,
-            userId: session.user.id
         });
 
         const savedTemplate = await template.save();
