@@ -49,8 +49,8 @@ export const TemplateContainer: React.FC<templatePage> = ({ slug, templates, sel
                                     <span className='absolute top-0 left-0 text-border'><GripHorizontal /></span>
                                 </div>
                                 <div onClick={() => handleTemplateClick(template)} className={`w-full h-[14rem] relative group `}>
-                                    <Image height={200} width={400} src={`http:localhost:3000/${template.thumbnailImage}`} alt={template.projectName} className={`w-full h-full object-cover object-center `} />
-                                    <div className='w-full h-full z-10 absolute top-0 left-0 bg-blue-400 bg-opacity-40 text-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-200'>
+                                    <Image height={200} width={400} src={template.thumbnailImage} alt={template.projectName} className={`w-full h-full object-cover object-center `} />
+                                    <div className='w-full h-full z-2 absolute top-0 left-0 bg-blue-400 bg-opacity-40 text-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-200'>
                                     </div>
                                 </div>
                             </div>
