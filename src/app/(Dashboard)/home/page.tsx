@@ -49,14 +49,7 @@ const Home: React.FC = () => {
             }
 
             const newProject = await response.json();
-            // Only keep the fields we need for display
-            const simplifiedProject = {
-                _id: newProject._id,
-                projectName: newProject.projectName,
-                projectImage: newProject.projectImage,
-                description: newProject.description,
-                lastModified: newProject.lastModified
-            };
+            
             setNotification({ visible: true });
             setShowWizard(false);
 
