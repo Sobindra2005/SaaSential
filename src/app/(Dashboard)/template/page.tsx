@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import AfterLoginHeader from '@/components/Layout/AfterLogin/Dashboard/header';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
@@ -43,7 +43,7 @@ const TemplatePage = () => {
         }
     };
 
-    const { data , isFetching ,isError  } = useQuery({
+    const { data , isFetching   } = useQuery({
         queryKey: ['templates'],
         queryFn: fetchTemplates
     })

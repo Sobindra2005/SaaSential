@@ -1,5 +1,5 @@
 "use client"
-import React, { Suspense, useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Container from '@/components/Layout/Container';
 import ProjectCard from '@/components/ui/cards/projectCrad';
 import ProjectWizard from '@/components/forms/CreateProject';
@@ -8,7 +8,6 @@ import { AnimatePresence } from 'framer-motion';
 import { Notification } from '@/components/Common/notification';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import Loader from '@/components/Common/loading/loader';
 import { api } from '@/utils/api';
 import { useQuery } from '@tanstack/react-query';
 import { DivFetchIndicator } from '@/components/Common/loading/divFetchingIndicator';
@@ -28,8 +27,6 @@ const Home: React.FC = () => {
     const [showWizard, setShowWizard] = useState(false);
     const [notification, setNotification] = useState({ visible: false });
     const router = useRouter();
-    const [project, setProjects] = useState<Project[]>()
-
     const handleCreateProject = async (projectData: { template: string, name: string; templateDesign: string; templateId: string | null; description: string }) => {
         try {
             const response = await fetch(`/api/userProjects?type=${projectData.templateDesign}&&template=${projectData.template}`, {
@@ -60,7 +57,6 @@ const Home: React.FC = () => {
                 description: newProject.description,
                 lastModified: newProject.lastModified
             };
-            setProjects(prevProjects => [simplifiedProject, ...(prevProjects || [])]);
             setNotification({ visible: true });
             setShowWizard(false);
 
