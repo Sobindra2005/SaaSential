@@ -4,6 +4,8 @@ import AfterLoginHeader from '@/components/Layout/AfterLogin/Dashboard/header';
 import { useRouter } from 'next/navigation';
 import { useParams, useSearchParams } from 'next/navigation';
 import { TemplateContainer } from '@/components/Layout/AfterLogin/template';
+import { api } from '@/utils/api';
+import { useQuery } from '@tanstack/react-query';
 
 interface TemplateData {
     _id: string;
@@ -16,7 +18,6 @@ interface TemplateData {
 }
 
 const TemplatePage = () => {
-    const [templates, setTemplates] = useState<TemplateData[]>([]);
     const [selectedTemplate, setSelectedTemplate] = useState<TemplateData | null>(null);
     const [click, setClick] = useState<number>(0);
 
@@ -33,16 +34,9 @@ const TemplatePage = () => {
         projectId = id.split("-")[1]
     }
 
-    useEffect(() => {
-        const fetchTemplates = async () => {
-            const response = await fetch(`/api/availableTemplates?type=${slug}`);
-            const data = await response.json();
-            setTemplates(data);
-        };
-
-        fetchTemplates();
-    }, [slug]);
-
+    const fetchTemplates = async () => {
+        return api.get(`/api/availableTemplates?type=${slug}`);
+    };
 
     const handleTemplateClick = (template: TemplateData) => {
         setClick(click + 1);
@@ -55,7 +49,6 @@ const TemplatePage = () => {
 
     const handleSelectButtonClick = async () => {
         if (selectedTemplate) {
-      
             if (willFetch) {
                 const response = await fetch(`/api/userProjects/${projectId}`, {
                     method: 'PUT',
@@ -63,9 +56,9 @@ const TemplatePage = () => {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        html:selectedTemplate.html,
-                        css:selectedTemplate.css,
-                        projectImage:selectedTemplate.thumbnailImage
+                        html: selectedTemplate.html,
+                        css: selectedTemplate.css,
+                        projectImage: selectedTemplate.thumbnailImage
                     }),
                 });
 
@@ -77,10 +70,15 @@ const TemplatePage = () => {
         }
     };
 
+    const { data, isFetching } = useQuery({
+        queryKey: ['project'],
+        queryFn: fetchTemplates
+    })
+
     return (
         <>
             <AfterLoginHeader render={false} />
-            <TemplateContainer slug={slug} templates={templates} selectedTemplate={selectedTemplate} handleTemplateClick={handleTemplateClick} handleSelectButtonClick={handleSelectButtonClick} />
+            <TemplateContainer isFetching={isFetching} slug={slug} templates={data?.data as TemplateData[]} selectedTemplate={selectedTemplate} handleTemplateClick={handleTemplateClick} handleSelectButtonClick={handleSelectButtonClick} />
         </>
     );
 };

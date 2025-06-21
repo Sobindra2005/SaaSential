@@ -9,6 +9,9 @@ import { Notification } from '@/components/Common/notification';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Loader from '@/components/Common/loading/loader';
+import { api } from '@/utils/api';
+import { useQuery } from '@tanstack/react-query';
+import { DivFetchIndicator } from '@/components/Common/loading/divFetchingIndicator';
 
 interface Project {
     _id: string;
@@ -17,39 +20,15 @@ interface Project {
     description: string;
     lastModified: string;
 }
+const fetchProjects = () => {
+    return api.get('/api/userProjects');
+};
 
 const Home: React.FC = () => {
     const [showWizard, setShowWizard] = useState(false);
     const [notification, setNotification] = useState({ visible: false });
     const router = useRouter();
-    const [projects, setProjects] = useState<Project[]>([]);
-
-    useEffect(() => {
-        const fetchProjects = async () => {
-            try {
-                const response = await fetch('/api/userProjects');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch projects');
-                }
-                const data = await response.json();
-                const simplifiedProjects = data.map((project: Project) => ({
-                    _id: project._id,
-                    projectName: project.projectName,
-                    projectImage: project.projectImage,
-                    description: project.description,
-                    lastModified: project.lastModified
-                }));
-
-                setProjects(simplifiedProjects);
-            } catch (error) {
-                console.error('Error fetching projects:', error);
-            }
-        };
-
-        fetchProjects();
-    }, []);
-
-
+    const [project, setProjects] = useState<Project[]>()
 
     const handleCreateProject = async (projectData: { template: string, name: string; templateDesign: string; templateId: string | null; description: string }) => {
         try {
@@ -81,7 +60,7 @@ const Home: React.FC = () => {
                 description: newProject.description,
                 lastModified: newProject.lastModified
             };
-            setProjects(prevProjects => [simplifiedProject, ...prevProjects]);
+            setProjects(prevProjects => [simplifiedProject, ...(prevProjects || [])]);
             setNotification({ visible: true });
             setShowWizard(false);
 
@@ -99,11 +78,20 @@ const Home: React.FC = () => {
         setNotification(prev => ({ ...prev, visible: false }));
     };
 
+    const { data, isFetching } = useQuery({
+        queryKey: ['project'],
+        queryFn: fetchProjects
+    })
+
     return (
         <>
-            <Suspense fallback={<Loader />}>
-                <AfterLoginHeader onCreate={() => setShowWizard(true)} />
-                <Container className={`${projects.length === 0 ? '' : 'min-h-screen'} p-10 w-full mt-24  ml-24 `}>
+            <AfterLoginHeader onCreate={() => setShowWizard(true)} />
+            {isFetching ?
+                <Container className='p-10 w-full   ml-24'>
+                    <DivFetchIndicator />
+                </Container>
+                :
+                <Container className={`${(data?.data as Project[]).length === 0 ? '' : 'min-h-screen'} p-10 w-full mt-24  ml-24 `}>
                     <div className="fixed top-5 right-5 z-50">
                         <Notification
                             type={'success'}
@@ -124,7 +112,7 @@ const Home: React.FC = () => {
                             </div>
                         )}
                     </AnimatePresence>
-                    {projects.length === 0 ? (
+                    {(data?.data as Project[]).length === 0 ? (
                         <div className="flex flex-col items-center justify-center w-full h-[70vh] bg-transparent rounded-xl shadow-none">
                             <motion.div
                                 initial={{ scale: 0.95, opacity: 0 }}
@@ -152,7 +140,7 @@ const Home: React.FC = () => {
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
-                            {projects.map((project) => (
+                            {(data?.data as Project[]).map((project) => (
                                 <ProjectCard
                                     key={project._id}
                                     projectId={project._id}
@@ -165,7 +153,7 @@ const Home: React.FC = () => {
                         </div>
                     )}
                 </Container>
-            </Suspense>
+            }
         </>
     );
 };

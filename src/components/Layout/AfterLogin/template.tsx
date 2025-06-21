@@ -5,6 +5,7 @@ import Container from '@/components/Layout/Container';
 import SearchBar from '@/components/Common/searchBar';
 import { GripHorizontal } from 'lucide-react';
 import Image from 'next/image';
+import { DivFetchIndicator } from '@/components/Common/loading/divFetchingIndicator'
 
 interface TemplateData {
     _id: string;
@@ -23,21 +24,38 @@ interface templatePage {
     selectedTemplate: TemplateData | null;
     handleTemplateClick: (template: TemplateData) => void;
     handleSelectButtonClick: () => void;
-    willFetch?: boolean
+    isFetching: boolean
 }
 
-export const TemplateContainer: React.FC<templatePage> = ({ slug, templates, selectedTemplate, handleTemplateClick, handleSelectButtonClick }) => {
-    return (
+const HeaderPart = ({ slug }: { slug: string }) => {
+    return (<>
+        <h1 className='text-4xl font-bold text-secondary'>
+            {slug === 'blog' && 'Create Your Professional Blog'}
+            {slug === 'ecommerce' && 'Build Your Online Store'}
+            {slug === 'portfolio' && 'Showcase Your Portfolio'}
+            {!['blog', 'ecommerce', 'portfolio'].includes(slug) && 'Select the Site That Speaks to You'}
+        </h1>
+        <SearchBar placeholder='Search for your perfect template...' className='mt-6' />
+    </>
+    )
+}
+
+export const TemplateContainer: React.FC<templatePage> = ({ slug, templates, selectedTemplate, handleTemplateClick, handleSelectButtonClick, isFetching }) => {
+    if (isFetching) {
+        return (
+            <>
+                <Container className="min-h-screen p-10 w-full mt-24 ml-24 text-center flex flex-col items-center">
+                    <HeaderPart slug={slug} />
+                    <DivFetchIndicator />
+                </Container>
+            </>
+        );
+    }
+    else return (
         <>
             <Container className="min-h-screen p-10 w-full mt-24 ml-24 text-center flex flex-col items-center">
-                <h1 className='text-4xl font-bold text-secondary'>
-                    {slug === 'blog' && 'Create Your Professional Blog'}
-                    {slug === 'ecommerce' && 'Build Your Online Store'}
-                    {slug === 'portfolio' && 'Showcase Your Portfolio'}
-                    {!['blog', 'ecommerce', 'portfolio'].includes(slug) && 'Select the Site That Speaks to You'}
-                </h1>
-                <SearchBar placeholder='Search for your perfect template...' className='mt-6' />
 
+                <HeaderPart slug={slug} />
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 w-full mt-24 capitalize">
                     {templates.map((template) => (
                         <div
