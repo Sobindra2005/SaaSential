@@ -41,7 +41,7 @@ export default function HeroSection() {
                         duration: 0.5,
                         ease: "easeInOut"
                     }}
-                    className=' topShadow  w-[50rem] bg-gradient-to-b from-[#282637] to-[#030014]  p-2 mt-4 h-auto rounded-xl '>
+                    className=' topShadow max-w-[50rem] min-w-[20rem] bg-gradient-to-b from-[#282637] to-[#030014]  p-2 mt-4 h-auto rounded-xl '>
                     <LandingDiv />
 
                 </motion.div>

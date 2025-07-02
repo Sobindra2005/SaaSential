@@ -122,7 +122,7 @@ const Home: React.FC = () => {
                                         onClick={() => setShowWizard(true)}
                                         className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-500 text-white rounded-lg font-medium shadow hover:from-blue-700 hover:to-purple-600 transition-colors"
                                     >
-                                        + Create Your First Project
+                                        +  Create Your First Project
                                     </motion.button>
                                 </div>
                             </motion.div>

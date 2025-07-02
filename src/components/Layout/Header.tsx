@@ -77,7 +77,7 @@ export default function Navbar() {
                                 duration: 0.4,
                                 ease: "easeInOut"
                             }}
-                            className="md:hidden w-fit border border-gray-800 rounded-xl text-sm fixed top-16 z-50 right-1 sm:top-20 sm:right-10 shadow-sm shadow-purple-900 ">
+                            className="md:hidden w-fit border bg-primary border-gray-800 rounded-xl text-sm fixed top-16 z-50 right-1 sm:top-20 sm:right-10 shadow-sm shadow-purple-900 ">
                             <div className="px-2 pt-2 pb-3 space-y-1  sm:px-3">
                                 <MobileNavLink href="#product">Product</MobileNavLink>
                                 <MobileNavLink href="/#price">Price</MobileNavLink>

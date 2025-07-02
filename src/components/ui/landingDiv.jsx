@@ -8,7 +8,7 @@ export default function LandingDiv() {
         <div
 
             className="flex insideBottomShadow rounded-xl w-full h-auto bg-gradient-to-b from-[#0a061e] to-[#030014]  ">
-            <div className="min-w-[10rem]  border-r border-gray-800">
+            <div className="min-w-[10rem] hidden md:block border-r border-gray-800">
                 {/* Brand header */}
                 <div className="flex items-center gap-2 p-4 border-b border-gray-800">
                     <Globe className="w-6 h-6 text-blue-500" />
@@ -17,7 +17,7 @@ export default function LandingDiv() {
                 </div>
 
                 {/* Main navigation */}
-                <div className="p-4 mask-image-linear-gradient">
+                <div className="p-4  mask-image-linear-gradient">
                     <div className="text-sm  ">
                         <div className="text-sm font-medium text-gray-400 mb-4">My Workspace</div>
                         <Link

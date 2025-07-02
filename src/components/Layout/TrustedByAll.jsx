@@ -8,34 +8,34 @@ const TrustedByAll = () => {
     const firstRowRef = useRef(null);
     const secondRowRef = useRef(null);
 
-    const reviewData = [
+const reviewData = [
         {
-            userName: "Jane Smith",
-            userTitle: "Amazing Quality",
+            userName: "Aarati Sharma",
+            userTitle: "Dherai Ramro Quality",
             review: "I absolutely loved this product. The quality is unmatched, and it's worth every penny!",
             userImage: "https://randomuser.me/api/portraits/women/44.jpg"
         },
         {
-            userName: "Michael Johnson",
-            userTitle: "Great Value",
+            userName: "Bipin Thapa",
+            userTitle: "Ramro Paisa Vasul",
             review: "This product offers great value for its price. I highly recommend it to everyone.",
             userImage: "https://randomuser.me/api/portraits/men/32.jpg"
         },
         {
-            userName: "Emily Davis",
-            userTitle: "Highly Recommended",
+            userName: "Sunita Gurung",
+            userTitle: "Ati Ramro Sifaris",
             review: "This is hands down one of the best purchases I've made this year. Absolutely satisfied!",
             userImage: "https://randomuser.me/api/portraits/women/68.jpg"
         },
         {
-            userName: "David Wilson",
-            userTitle: "Excellent Service",
+            userName: "Deepak Shrestha",
+            userTitle: "Uttam Sewa",
             review: "The customer service is exceptional. They were very helpful with all my questions.",
             userImage: "https://randomuser.me/api/portraits/men/45.jpg"
         },
         {
-            userName: "Sarah Brown",
-            userTitle: "Perfect Solution",
+            userName: "Pratima Karki",
+            userTitle: "Purna Samadhan",
             review: "This solved all my problems. I can't imagine going back to my old workflow now.",
             userImage: "https://randomuser.me/api/portraits/women/23.jpg"
         },
