@@ -35,14 +35,14 @@ const Feature = () => {
                     duration: 0.7,
                     ease: "easeInOut"
                 }}
-                className=' flex bg-gradient-to-b from-[#282637] to-[#030014] relative p-2 mt-4 rounded-xl '>
-                <div className="overflow-hidden rounded-lg">
+                className='flex w-full max-w-[30rem] h-auto aspect-[6/5] mx-auto md:mx-7 bg-gradient-to-b from-[#282637] to-[#030014] relative p-2 mt-4 rounded-xl'>
+                <div className="overflow-hidden w-full h-full rounded-lg">
                     <Image
                         src="/feature.png"
                         width={500}
                         height={800}
                         alt="website ready within a minute"
-                        className='w-[35rem] h-[25rem] object-cover object-center mask-image'
+                        className='w-full h-full object-cover object-center mask-image'
                         style={{
                             maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 85%, rgba(0,0,0,0))',
                             WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 85%, rgba(0,0,0,0))'

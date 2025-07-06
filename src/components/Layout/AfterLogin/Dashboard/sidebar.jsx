@@ -1,7 +1,7 @@
 "use client"
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Blocks, ChartLine, PanelLeftOpen, PanelRightOpen, Users, Workflow } from 'lucide-react';
+import { Blocks, PanelLeftOpen, PanelRightOpen, Workflow, BrainCog } from 'lucide-react';
 import Link from 'next/link';
 
 const Sidebar = () => {
@@ -14,8 +14,8 @@ const Sidebar = () => {
     const sidebarItems = [
         { icon: Blocks, link: 'home', label: 'Projects' },
         { icon: Workflow, link: 'template', label: 'Templates' },
-        { icon: ChartLine, link: 'analytics', label: 'Analytics' },
-        { icon: Users, link: 'collaboration', label: 'Collaboration' },
+        { icon: BrainCog, link: 'buildwithai', label: 'Build with Ai' },
+        // { icon: Users, link: 'collaboration', label: 'Collaboration' },
 
     ];
 

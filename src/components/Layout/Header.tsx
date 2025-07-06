@@ -21,7 +21,7 @@ export default function Navbar() {
                 <Container padding='px-3'>
                     <div className="flex justify-between bg-primary  h-16 items-center">
                         <div className={` font-bold text-xl gap-2`}>
-                            <div className='flex items-center  gap-2'><Logo /> </div>
+                            <div className='flex items-center'><Logo /> </div>
                         </div>
                         <div className="hidden md:flex space-x-8 rounded-full border border-gray-800 p-2 px-7  ">
                             <NavLink href="/#home">Product</NavLink>

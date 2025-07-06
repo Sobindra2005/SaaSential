@@ -329,7 +329,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ onClose, onComplete }) =>
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40 text-white">
+        className="fixed inset-0 z-50 px-4 bg-black bg-opacity-50 flex items-center justify-center text-white">
         <div className="bg-[#141d2d] rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" style={{
           scrollbarWidth: 'thin',
           scrollbarColor: '#475569 #1e293b'
