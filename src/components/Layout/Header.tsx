@@ -24,10 +24,9 @@ export default function Navbar() {
                             <div className='flex items-center'><Logo /> </div>
                         </div>
                         <div className="hidden md:flex space-x-8 rounded-full border border-gray-800 p-2 px-7  ">
-                            <NavLink href="/#home">Product</NavLink>
-                            <NavLink href="/#Service&facilities">Price</NavLink>
-                            <NavLink href="/#pricing">About</NavLink>
-                            <NavLink href="/#trainers">Resources</NavLink>
+                            <NavLink href="/#price">Price</NavLink>
+                            <NavLink href="/#about">About</NavLink>
+                            <NavLink href="/#resources">Resources</NavLink>
                             <NavLink href="/contribute">Contribute Templates</NavLink>
                         </div>
                         {session.data ? (
@@ -79,11 +78,10 @@ export default function Navbar() {
                             }}
                             className="md:hidden w-fit border bg-primary border-gray-800 rounded-xl text-sm fixed top-16 z-50 right-1 sm:top-20 sm:right-10 shadow-sm shadow-purple-900 ">
                             <div className="px-2 pt-2 pb-3 space-y-1  sm:px-3">
-                                <MobileNavLink href="#product">Product</MobileNavLink>
                                 <MobileNavLink href="/#price">Price</MobileNavLink>
                                 <MobileNavLink href="/#about">About</MobileNavLink>
                                 <MobileNavLink href="/#resources">Resources</MobileNavLink>
-                                <MobileNavLink href="/#download">Download</MobileNavLink>
+                                <MobileNavLink href="/contribute">Download</MobileNavLink>
                             </div>
                         </motion.div>
                     </AnimatePresence>

@@ -14,7 +14,7 @@ export default function LandingPage() {
                 <header>
                     <Header />
                 </header>
-                <section>
+                <section id="about">
                     <HeroSection />
                 </section>
                 <section>
@@ -24,7 +24,7 @@ export default function LandingPage() {
                     <TrustedByAll />
                 </section>
 
-                <section>
+                <section id="price">
                     <Pricing />
                 </section>
                 <footer>

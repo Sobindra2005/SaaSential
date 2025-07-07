@@ -100,19 +100,32 @@ export default function BuildWithAI() {
                 )}
             </div>
             
-            <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="p-4 border-t  dark:border-gray-700">
                 <form onSubmit={handleSendMessage} className="max-w-2xl mx-auto flex items-center gap-2">
-                    <input
-                        type="text"
+                    <textarea
                         value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        placeholder="Type your message here..."
-                        className="flex-grow p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800"
+                        onChange={(e) => {
+                            setInput(e.target.value);
+                            // Auto-resize the textarea
+                            e.target.style.height = 'auto';
+                            e.target.style.height = `${e.target.scrollHeight}px`;
+                        }}
+                        placeholder="Describe your idea here..."
+                        className="flex-grow p-3 border rounded-lg  bg-white dark:bg-gray-800 resize-none min-h-[48px] max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-transparent"
+                        style={{
+                            scrollbarWidth: 'thin',
+                            scrollbarColor: 'transparent transparent'
+                        }}
                         disabled={isLoading}
+                        rows={1}
+                        onFocus={(e) => {
+                            e.target.style.height = 'auto';
+                            e.target.style.height = `${e.target.scrollHeight}px`;
+                        }}
                     />
                     <button 
                         type="submit" 
-                        className="p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50"
+                        className="p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50 self-end"
                         disabled={isLoading || !input.trim()}
                     >
                         <Send size={20} />

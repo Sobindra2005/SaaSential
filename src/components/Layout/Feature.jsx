@@ -35,7 +35,8 @@ const Feature = () => {
                     duration: 0.7,
                     ease: "easeInOut"
                 }}
-                className='flex w-full max-w-[30rem] h-auto aspect-[6/5] mx-auto md:mx-7 bg-gradient-to-b from-[#282637] to-[#030014] relative p-2 mt-4 rounded-xl'>
+                className='flex w-full max-w-[40rem] h-[25rem] aspect-[6/5] mx-auto bg-gradient-to-b from-[#282637] to-[#030014] relative p-2 mt-4 rounded-xl'
+            >
                 <div className="overflow-hidden w-full h-full rounded-lg">
                     <Image
                         src="/feature.png"
@@ -51,7 +52,7 @@ const Feature = () => {
                         priority
                     />
                 </div>
-            </motion.div>
+            </motion.div> 
         </Container>
     );
 };
