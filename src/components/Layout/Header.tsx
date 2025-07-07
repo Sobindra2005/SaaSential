@@ -81,7 +81,7 @@ export default function Navbar() {
                                 <MobileNavLink href="/#price">Price</MobileNavLink>
                                 <MobileNavLink href="/#about">About</MobileNavLink>
                                 <MobileNavLink href="/#resources">Resources</MobileNavLink>
-                                <MobileNavLink href="/contribute">Download</MobileNavLink>
+                                <MobileNavLink href="/contribute">Contribute</MobileNavLink>
                             </div>
                         </motion.div>
                     </AnimatePresence>
