@@ -32,13 +32,14 @@ export default function Navbar() {
                         {session.data ? (
                             <div className='flex items-center gap-4'>
                                 <Link href="/home">
-                                    <div className='flex items-center gap-2 cursor-pointer hover:bg-purple-600/10 p-2 rounded-lg transition-colors'>
+                                    <div className='flex items-center rounded-full overflow-hidden max-w-20 max-h-20 gap-2 cursor-pointer hover:bg-purple-600/10 p-2  transition-colors'>
                                         <Image
+                                        
                                             src={session?.data?.user?.image  || '/default-avatar.png'}
                                             alt={session?.data?.user?.name || 'User'}
                                             width={40}
                                             height={40}
-                                            className="rounded-full bg-purple-500"
+                                            className="w-12 h-12 overflow-hidden rounded-full bg-purple-500"
                                         />
                                     </div>
                                 </Link>
@@ -46,7 +47,7 @@ export default function Navbar() {
                         ) : (
                             <div className='flex gap-2 sm:gap-8 text-sm items-center justify-center'>
                                 <Link href={"/login"}> <button className='hover:text-purple-500'>Login</button></Link>
-                                <Link href={"signup"}> <Button type='primary'>SignUp</Button></Link>
+                                <Link href={"signup"}> <Button ButtonType='primary'>SignUp</Button></Link>
                             </div>
                         )}
 

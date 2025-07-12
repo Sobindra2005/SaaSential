@@ -30,7 +30,7 @@ export default function HeroSection() {
                         ease: "easeInOut"
                     }}
                     className="flex space-x-4  mt-4">
-                    <Link href={"/home"}> <Button type="tertiary">Get Started</Button></Link>
+                    <Link href={"/home"}> <Button ButtonType="tertiary">Get Started</Button></Link>
                 </motion.div>
 
                 <motion.div

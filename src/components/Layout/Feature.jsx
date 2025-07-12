@@ -15,7 +15,7 @@ const Feature = () => {
                     delay: 0.1,
                     duration: 0.7,
                     ease: "easeInOut"
-                }}> <Button type='tertiary'>Features</Button></motion.div>
+                }}> <Button ButtonType='tertiary'>Features</Button></motion.div>
             <motion.div
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}

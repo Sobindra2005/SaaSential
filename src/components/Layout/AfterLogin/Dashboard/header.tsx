@@ -19,7 +19,7 @@ const AfterLoginHeader: React.FC<props> = ({ onCreate, render = true }) => {
           
                 {render ?
                     <div  className='flex items-center gap-10'>
-                        <Button onClick={onCreate}   type='secondary' className='flex items-center gap-2 '>
+                        <Button onClick={onCreate}   ButtonType='secondary' className='flex items-center gap-2 '>
                             <FaPlus /> <span className='hidden md:block'> Add New Project </span> 
                         </Button>
                     </div>

@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { UseFormRegister, FieldValues, Path } from "react-hook-form";
 import { RiSparkling2Line, RiEyeLine, RiEyeOffLine, RiLoader4Line } from "react-icons/ri";
+import { RiCloseLine } from "react-icons/ri";
 
 interface InputProps<T extends FieldValues> {
     label: string;
@@ -122,6 +123,20 @@ export const TextArea = <T extends FieldValues>({
         </div>
     );
 };
+
+interface ComboBoxProps {
+    name: string;
+    className?: string;
+}
+
+export const ComboBox: React.FC<ComboBoxProps> = ({ name, className = "" }) => (
+    <div
+        className={`flex items-center cursor-pointer rounded-lg gap-1 bg-primary/40 hover:bg-primary/100 transition-colors px-3 py-1  absolute ${className}`}
+        style={{ width: "fit-content" }}
+    >
+        <span className="text-gray-400 text-sm">{name}</span>
+    </div>
+);
 
 
 export default Input;

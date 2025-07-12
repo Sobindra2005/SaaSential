@@ -1,7 +1,6 @@
 import React from 'react';
 
 import Sidebar from "../../components/Layout/AfterLogin/Dashboard/sidebar"
-import { BuildWithAI } from '@/components/Layout/buildWithAi';
 
 
 const Layout = ({ children }) => {
@@ -10,7 +9,6 @@ const Layout = ({ children }) => {
             <Sidebar />
             <main className="flex-grow  flex min-h-full ">
                 {children}
-                <BuildWithAI/>
             </main>
         </div>
     );

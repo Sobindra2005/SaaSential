@@ -27,6 +27,7 @@ const Home: React.FC = () => {
     const [showWizard, setShowWizard] = useState(false);
     const [notification, setNotification] = useState({ visible: false });
     const router = useRouter();
+    
     const handleCreateProject = async (projectData: { template: string, name: string; templateDesign: string; templateId: string | null; description: string }) => {
         try {
             const response = await fetch(`/api/userProjects?type=${projectData.templateDesign}&&template=${projectData.template}`, {

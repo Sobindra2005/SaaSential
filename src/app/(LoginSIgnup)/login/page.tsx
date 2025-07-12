@@ -179,7 +179,7 @@ const Login: React.FC = () => {
             <form onSubmit={handleSubmit(handleLogin)} className="w-full max-w-md bg-primary p-8 rounded-lg shadow-md">
                 <Input placeholder='eg: example@gmail.com' label="Email" type="email" id="email" enabledSparkle={false} register={register} required />
                 <Input placeholder='eg: example@726$Rfs' label="Password" type="password" id="password" enabledSparkle={false} register={register} required />
-                <Button type="primary" className="w-full py-2">
+                <Button ButtonType="primary" className="w-full py-2">
                     {isLoading ? 'Logging in...' : 'Login'}
                 </Button>
             </form>
@@ -201,7 +201,7 @@ const Login: React.FC = () => {
                     </a>
                 </p>
             </div>
-            <Button onClick={() => router.push("/home")} type="tertiary" className="w-fit py-2 mt-5 flex items-center gap-2">
+            <Button onClick={() => router.push("/home")} ButtonType="tertiary" className="w-fit py-2 mt-5 flex items-center gap-2">
                 <IoPeople size={22} /> Login as Guest
             </Button>
         </Container>

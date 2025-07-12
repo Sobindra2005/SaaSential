@@ -159,7 +159,7 @@ const Signup: React.FC = () => {
                 <Input placeholder='eg: example@gmail.com' label="Email" type="email" id="email" enabledSparkle={false} register={register} required />
                 <Input placeholder='eg: example@726$Rfs' label="Password" type="password" id="password" enabledSparkle={false} register={register} required />
                 <Input placeholder='eg: example@726$Rfs' label="Confirm Password" type="password" id="confirmPassword" enabledSparkle={false} register={register} required />
-                <Button type="primary" className="w-full py-2">
+                <Button ButtonType="primary" className="w-full py-2">
                     {isLoading ? 'Creating Account...' : 'Sign Up'}
                 </Button>
             </form>
