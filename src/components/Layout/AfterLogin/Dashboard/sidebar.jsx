@@ -1,11 +1,15 @@
 "use client"
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Blocks, PanelLeftOpen, PanelRightOpen, Workflow, BrainCog } from 'lucide-react';
+import { Blocks, PanelLeftOpen, PanelRightOpen, Workflow, BrainCog, PenBoxIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '@/utils/api';
 
-
+const fetchChatHistroy = async ()=> {
+   return api.get(`/api/chat`)
+}
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
@@ -38,18 +42,28 @@ const Sidebar = () => {
         { id: 3, text: "Feel free to ask any questions.", timestamp: new Date().toISOString() }
     ];
 
+    const { data, isFetching } = useQuery({
+        queryKey: ['chatHistroy'],
+        queryFn: fetchChatHistroy
+    })
+
     return (
         <motion.div
-            className={` text-white border-r ${isBuildWithAiPage ? 'bg-primary' : 'bg-primary'}  z-50 border-gray-800 h-screen fixed top-[78px]  overflow-hidden  `}
+            className={`text-white border-r ${isBuildWithAiPage ? 'bg-primary' : 'bg-primary'} z-50 border-gray-800 h-screen fixed top-[11.7%] xl:top-[10%] overflow-hidden`}
             animate={{ width: isOpen ? 200 : 60 }}
             transition={{ duration: 0.2 }}
         >
-            <div className="flex items-center justify-between text-xl font-bold border-b border-gray-800  p-4 gap-8 ">
+            <div className="flex items-center justify-between text-xl font-bold border-b border-gray-800 p-4 gap-8 ">
                 {isOpen && <span className='text-gray-300'>{isBuildWithAiPage ? "Chats" : 'Builder'}</span>} <button onClick={toggleSidebar} className="text-xl">
                     {isOpen ? <PanelRightOpen /> : <PanelLeftOpen />}
                 </button>
             </div>
             <nav className="mt-4 w-full">
+                {isBuildWithAiPage &&
+                    <div className={`flex gap-3 px-2 pb-5 cursor-pointer w-full  ${isOpen ? '' : 'justify-center'} items-center `}>
+                        <PenBoxIcon size={24} />{isOpen && <span className="text-gray-400 hover:text-gray-100 text-md truncate">New chat</span>}
+                    </div>
+                }
                 <ul>
                     {isBuildWithAiPage ? (
                         <div>
@@ -74,7 +88,6 @@ const Sidebar = () => {
     );
 };
 
-
 const SidebarItem = ({ icon: Icon, label, isOpen }) => {
     return (
         <li className="flex items-center p-4 hover:bg-gray-900 overflow-hidden w-full cursor-default ">
@@ -87,6 +100,5 @@ const SidebarItem = ({ icon: Icon, label, isOpen }) => {
         </li>
     );
 };
-
 
 export default Sidebar;

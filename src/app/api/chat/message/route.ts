@@ -1,38 +1,56 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Message } from '@/models/message';
 import { connectToDatabase } from '@/lib/mongodb';
+import { authOptions } from '@/lib/auth';
+import { getServerSession } from 'next-auth';
 
-// GET: List all messages for a chatId and userId
 export async function GET(req: NextRequest) {
-  await connectToDatabase();
-  const chatId = req.nextUrl.searchParams.get('chatId');
-  const userId = req.nextUrl.searchParams.get('userId');
-  if (!chatId || !userId) {
-    return NextResponse.json({ error: 'chatId and userId are required' }, { status: 400 });
-  }
-  // Find all messages for the given chatId and userId, sorted by date/time ascending
-  const messages = await Message.find({ chatId, userId }).sort({ date: 1, time: 1 });
-  return NextResponse.json(messages);
+    const chatId = req.nextUrl.searchParams.get('chatId');
+    const session = await getServerSession(authOptions);
+
+    console.log("is fetching")
+    if (!session) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (!chatId) {
+        return NextResponse.json({ error: 'chatId are required' }, { status: 400 });
+    }
+
+    await connectToDatabase();
+    console.log('Fetching messages for chatId:', chatId);
+    const messages = await Message.find({ chatId, userId: session.user.id }).sort({ date: 1, time: 1 });
+    return NextResponse.json(messages);
 }
 
-// POST: Add a new message to a chat
 export async function POST(req: NextRequest) {
-  await connectToDatabase();
-  const { userId, chatId, senderId, message } = await req.json();
-  if (!userId || !chatId || !senderId || !message) {
-    return NextResponse.json({ error: 'userId, chatId, senderId, and message are required' }, { status: 400 });
-  }
-  const now = new Date();
-  const time = now.toTimeString().split(' ')[0];
-  const newMessage = await Message.create({
-    userId,
-    chatId,
-    senderId,
-    message,
-    date: now,
-    time
-  });
-  return NextResponse.json(newMessage, { status: 201 });
+
+    const session = await getServerSession(authOptions);
+    if (!session) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const { chatId, senderId, message } = await req.json();
+    console.log('Creating message for chatId:', chatId, 'by senderId:', senderId, 'with message:', message, 'by userId:', session.user.id);
+
+    if (!chatId || !senderId || !message) {
+        return NextResponse.json({ error: 'userId, chatId, senderId, and message are required' }, { status: 400 });
+    }
+    await connectToDatabase();
+    const now = new Date();
+    const time = now.toTimeString().split(' ')[0];
+
+    await Message.create({
+        userId: session.user.id,
+        chatId,
+        senderId,
+        message,
+        date: now,
+        time
+    });
+
+    const messages = await Message.find({ chatId })
+        .sort({ date: -1, time: -1 });
+
+    return NextResponse.json(messages, { status: 200 });
 }
 
 
