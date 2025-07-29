@@ -14,6 +14,8 @@ import { Loader2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import Lottie from "lottie-react";
+import loadingAnimation from "@/assets/animations/loading.json";
 
 const fetchMessages = async (chatId: string) => {
     const response = await api.get(`/api/chat/message?chatId=${chatId}`);
@@ -137,13 +139,13 @@ export default function BuildWithAI() {
         setShowList(false);
     }
 
-    const { data: chatHistory} = useQuery({
+    const { data: chatHistory } = useQuery({
         queryKey: ['chatHistory'],
         queryFn: fetchChatHistory,
 
     })
 
-    const { data: messages} = useQuery({
+    const { data: messages } = useQuery({
         queryKey: ['messages'],
         queryFn: () => fetchMessages((chatHistory as any)?.[0]?._id || ''),
         enabled: (chatHistory as IMessage[])?.length > 0
@@ -226,11 +228,11 @@ export default function BuildWithAI() {
                                                     </code>
                                                 );
                                             },
-                                            a: ({  ...props }) => (
+                                            a: ({ ...props }) => (
                                                 <a {...props} className="text-blue-500 underline" />
                                             ),
                                             p: ({ ...props }) => <p className="mb-2" {...props} />,
-                                            ul: ({  ...props }) => <ul className="list-disc pl-5 mb-2" {...props} />,
+                                            ul: ({ ...props }) => <ul className="list-disc pl-5 mb-2" {...props} />,
                                             ol: ({ ...props }) => <ol className="list-decimal pl-5 mb-2" {...props} />,
                                         }}
                                     >
@@ -241,8 +243,8 @@ export default function BuildWithAI() {
                         ))}
                         {isLoading && (
                             <div className="flex justify-start">
-                                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
-                                    <Loader2 size={20} className="animate-spin text-blue-500" />
+                                <div className="bg-white w-[20rem] h-[20rem] dark:bg-gray-800 rounded-lg shadow-sm ">
+                                   <Lottie width={200} height={200} animationData={loadingAnimation} loop={true} />
                                 </div>
                             </div>
                         )}
