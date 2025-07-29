@@ -11,6 +11,9 @@ import AfterLoginHeader from '@/components/Layout/AfterLogin/Dashboard/header';
 import SendBox, { CreateMsgComponent } from './createMsg';
 import { Notification } from '@/components/Common/notification';
 import { Loader2 } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const fetchMessages = async (chatId: string) => {
     const response = await api.get(`/api/chat/message?chatId=${chatId}`);
@@ -189,20 +192,50 @@ export default function BuildWithAI() {
                         onSubmit={handleCreateChat}
                     />
                 ) : (
-                    <div className="max-w-2xl w-full space-y-4 overflow">
+                    <div className="max-w-[80%] w-full space-y-4 overflow">
                         {(Array.isArray(messages) ? messages : []).map((message: IMessage, index: number) => (
                             <div
                                 key={index}
                                 className={`flex ${((message.senderId as unknown) as string) === userId ? 'justify-end' : 'justify-start'}`}
                             >
                                 <div
-                                    className={`flex max-w-[80%]  ${((message.senderId as unknown) as string) === userId
+                                    className={` max-w-[80%]  ${((message.senderId as unknown) as string) === userId
                                         ? 'bg-blue-600 text-white rounded-tl-lg rounded-tr-lg rounded-bl-lg'
                                         : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-tl-lg rounded-tr-lg rounded-br-lg'
                                         } p-4 shadow-sm`}
                                 >
 
-                                    <div>{message.message}</div>
+                                    <ReactMarkdown
+                                        components={{
+                                            code({ node, className, children, ...props }) {
+                                                // @ts-expect-error: 'inline' is not typed in the default props, but is present at runtime
+                                                const inline = props.inline;
+                                                const match = /language-(\w+)/.exec(className || '');
+                                                return !inline && match ? (
+                                                    <SyntaxHighlighter
+                                                        style={oneDark}
+                                                        language={match[1]}
+                                                        PreTag="div"
+                                                        className="rounded-md my-2 text-sm"
+                                                    >
+                                                        {String(children).replace(/\n$/, '')}
+                                                    </SyntaxHighlighter>
+                                                ) : (
+                                                    <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded" {...props}>
+                                                        {children}
+                                                    </code>
+                                                );
+                                            },
+                                            a: ({ node, ...props }) => (
+                                                <a {...props} className="text-blue-500 underline" />
+                                            ),
+                                            p: ({ node, ...props }) => <p className="mb-2" {...props} />,
+                                            ul: ({ node, ...props }) => <ul className="list-disc pl-5 mb-2" {...props} />,
+                                            ol: ({ node, ...props }) => <ol className="list-decimal pl-5 mb-2" {...props} />,
+                                        }}
+                                    >
+                                        {message.message}
+                                    </ReactMarkdown>
                                 </div>
                             </div>
                         ))}
@@ -220,7 +253,7 @@ export default function BuildWithAI() {
 
             {!!messages && (messages as IMessage[]).length > 0
                 && (
-                    <div className="p-4 border-t flex justify-center  dark:border-gray-700">
+                    <div className="p-4 flex justify-center">
                         <SendBox
                             input={input}
                             setInput={setInput}

@@ -1,20 +1,18 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Blocks, PanelLeftOpen, PanelRightOpen, Workflow, BrainCog, PenBoxIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
-import { api } from '@/utils/api';
+import { useQueryClient} from '@tanstack/react-query';
 
-const fetchChatHistroy = async ()=> {
-   return api.get(`/api/chat`)
-}
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
-    const [messages, setMessages] = useState([]);
     const isBuildWithAiPage = pathname.includes('buildwithai');
+    const queryClient = useQueryClient();
+
+    const chatHistory = queryClient.getQueryData(['chatHistory']);
 
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
@@ -26,26 +24,9 @@ const Sidebar = () => {
         { icon: BrainCog, link: 'buildwithai', label: 'Build with Ai' },
     ];
 
-    React.useEffect(() => {
-        if (isBuildWithAiPage) {
-            setMessages([{
-                id: 1,
-                text: "Welcome to the Build with AI page!",
-                timestamp: new Date().toISOString()
-            }]);
-        }
-    }, [isBuildWithAiPage]);
-
-    const ListedMessages = [
-        { id: 1, text: "Hello, how can I assist you today?", timestamp: new Date().toISOString() },
-        { id: 2, text: "Don't forget to check out our latest features!", timestamp: new Date().toISOString() },
-        { id: 3, text: "Feel free to ask any questions.", timestamp: new Date().toISOString() }
-    ];
-
-    const { data, isFetching } = useQuery({
-        queryKey: ['chatHistroy'],
-        queryFn: fetchChatHistroy
-    })
+    useEffect(() => {
+        console.log("Sidebar mounted, checking chat history...", chatHistory);
+    }, [chatHistory])
 
     return (
         <motion.div
@@ -67,11 +48,20 @@ const Sidebar = () => {
                 <ul>
                     {isBuildWithAiPage ? (
                         <div>
-                            {isOpen && ListedMessages.map((message) => (
-                                <li key={message.id} className={`flex items-center py-3 px-2 ${message.id === 1 ? 'bg-gray-900' : ''} hover:bg-gray-900 overflow-hidden w-full cursor-default`}>
-                                    <span className="text-gray-400 text-sm truncate">{message.text}</span>
-                                </li>
-                            ))}
+                            {isOpen && chatHistory !== undefined && (
+                                chatHistory.length === 0 ? (
+                                    <li className="text-gray-400 text-sm py-3 px-2">Nothing to show</li>
+                                ) : (
+                                    chatHistory.map((message, index) => (
+                                        <li
+                                            key={message._id}
+                                            className={`flex items-center py-3 px-2 ${index === 0 ? 'bg-gray-900' : ''} hover:bg-gray-900 overflow-hidden w-full cursor-default`}
+                                        >
+                                            <span className="text-gray-400 text-sm truncate">{message.chatHead}</span>
+                                        </li>
+                                    ))
+                                )
+                            )}
                         </div>
                     ) : sidebarItems.map((item, index) => (
                         <Link key={item.link} href={`/${item.link}`}>

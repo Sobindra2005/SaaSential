@@ -12,7 +12,7 @@ interface props {
 
 const AfterLoginHeader: React.FC<props> = ({ onCreate, render = true }) => {
     return (
-        <Container className='flex py-4 items-center z-10 justify-between border-b bg-primary absolute top-0 w-full '>
+        <Container className='flex py-4 items-center z-10 justify-between border-b border-gray-800 bg-primary fixed top-0 w-full '>
             <div>
                 <Logo />
             </div>

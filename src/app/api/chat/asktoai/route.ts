@@ -18,9 +18,19 @@ export async function POST(req: NextRequest) {
         }
 
         await connectToDatabase();
+        const finalPrompt = `
+You are a knowledgeable and helpful AI assistant.
+Your task is to provide the most accurate, well-structured, and concise answer to the user's question.
 
-        const finalPrompt = `You are a helpful AI assistant. Answer the following question clearly and concisely:\n\n${prompt}`;
+- Think step-by-step.
+- Research the topic as if you have access to reliable sources.
+- Include real-world examples if relevant.
+- Use bullet points or numbered lists where it improves clarity.
+- Format responses with markdown-style formatting (like headings, code blocks, and bold/italic text).
 
+Question:
+${prompt}
+`;
         // Send prompt to Gemini AI
         const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY as string);
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
