@@ -1,5 +1,5 @@
 
-import { useEffect, RefObject } from 'react';
+import { useEffect } from 'react';
 
 export function useOutsideClick<T extends HTMLElement>(
   ref: React.RefObject<T>,

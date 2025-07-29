@@ -102,7 +102,7 @@ export default function BuildWithAI() {
             setChatId(data?._id);
             queryClient.invalidateQueries({ queryKey: ['chatHistory'] });
         },
-        onError: (error) => {
+        onError: () => {
             setNotification({
                 visible: true,
                 message: 'server error occurred while creating chat',
@@ -137,13 +137,13 @@ export default function BuildWithAI() {
         setShowList(false);
     }
 
-    const { data: chatHistory, isFetching: isChatFetching } = useQuery({
+    const { data: chatHistory} = useQuery({
         queryKey: ['chatHistory'],
         queryFn: fetchChatHistory,
 
     })
 
-    const { data: messages, isFetching: isMessagesFetching, isSuccess: isMessagesSuccess } = useQuery({
+    const { data: messages} = useQuery({
         queryKey: ['messages'],
         queryFn: () => fetchMessages((chatHistory as any)?.[0]?._id || ''),
         enabled: (chatHistory as IMessage[])?.length > 0
@@ -207,7 +207,7 @@ export default function BuildWithAI() {
 
                                     <ReactMarkdown
                                         components={{
-                                            code({ node, className, children, ...props }) {
+                                            code({ className, children, ...props }) {
                                                 // @ts-expect-error: 'inline' is not typed in the default props, but is present at runtime
                                                 const inline = props.inline;
                                                 const match = /language-(\w+)/.exec(className || '');
@@ -226,12 +226,12 @@ export default function BuildWithAI() {
                                                     </code>
                                                 );
                                             },
-                                            a: ({ node, ...props }) => (
+                                            a: ({  ...props }) => (
                                                 <a {...props} className="text-blue-500 underline" />
                                             ),
-                                            p: ({ node, ...props }) => <p className="mb-2" {...props} />,
-                                            ul: ({ node, ...props }) => <ul className="list-disc pl-5 mb-2" {...props} />,
-                                            ol: ({ node, ...props }) => <ol className="list-decimal pl-5 mb-2" {...props} />,
+                                            p: ({ ...props }) => <p className="mb-2" {...props} />,
+                                            ul: ({  ...props }) => <ul className="list-disc pl-5 mb-2" {...props} />,
+                                            ol: ({ ...props }) => <ol className="list-decimal pl-5 mb-2" {...props} />,
                                         }}
                                     >
                                         {message.message}

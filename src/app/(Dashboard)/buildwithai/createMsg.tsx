@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent, ReactNode } from 'react';
 import Button from '@/components/Common/Buttons';
 import { ComboBox, XlTextArea } from '@/components/Common/Input';
 import List from '@/components/Common/list';
@@ -35,7 +35,7 @@ export const CreateMsgComponent: React.FC<CreateMsgProps> = ({
     input,
     setInput
 }) => {
-    const { data } = useSession();
+
 
     return (
         <div>
@@ -45,18 +45,18 @@ export const CreateMsgComponent: React.FC<CreateMsgProps> = ({
                 <p className="mb-6 text-gray-500 dark:text-gray-400 text-center max-w-md">
                     Describe your idea below and let AI help you bring it to life!
                 </p>
-               <SendBox
-                   input={input}
-                   setInput={setInput}
-                   onSubmit={onSubmit}
-                   isLoading={isLoading}
-                   showList={showList}
-                   setShowList={setShowList}
-                   tools={tools}
-                   defaultTool={defaultTool}
-                   selectTool={selectTool}
-                   containerRef={containerRef}
-               />
+                <SendBox
+                    input={input}
+                    setInput={setInput}
+                    onSubmit={onSubmit}
+                    isLoading={isLoading}
+                    showList={showList}
+                    setShowList={setShowList}
+                    tools={tools}
+                    defaultTool={defaultTool}
+                    selectTool={selectTool}
+                    containerRef={containerRef}
+                />
             </div>
         </div>
     );
@@ -71,7 +71,7 @@ type SendBoxProps = {
     isLoading: boolean;
     showList: boolean;
     setShowList: (show: boolean) => void;
-    tools: any[];
+    tools: { name: string; icon: ReactNode }[];
     defaultTool: string;
     selectTool: (tool: string) => void;
     containerRef?: React.RefObject<HTMLDivElement>;

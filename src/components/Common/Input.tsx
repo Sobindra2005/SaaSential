@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import { UseFormRegister, FieldValues, Path } from "react-hook-form";
 import { RiSparkling2Line, RiEyeLine, RiEyeOffLine, RiLoader4Line } from "react-icons/ri";
-import { RiCloseLine } from "react-icons/ri";
 
 interface InputProps<T extends FieldValues> {
     label: string;

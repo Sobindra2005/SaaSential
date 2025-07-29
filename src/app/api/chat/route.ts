@@ -6,7 +6,7 @@ import { authOptions } from '@/lib/auth';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // GET: List all chats for a user
-export async function GET(req: NextRequest) {
+export async function GET() {
     await connectToDatabase();
     const session = await getServerSession(authOptions);
     if (!session) {
