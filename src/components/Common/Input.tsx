@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import { UseFormRegister, FieldValues, Path } from "react-hook-form";
 import { RiSparkling2Line, RiEyeLine, RiEyeOffLine, RiLoader4Line } from "react-icons/ri";
@@ -138,5 +138,52 @@ export const ComboBox: React.FC<ComboBoxProps> = ({ name, className = "" }) => (
     </div>
 );
 
+type XlTextAreaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+    placeholder?: string;
+    disabled?: boolean;
+    className?: string;
+    rows?: number;
+    style?: React.CSSProperties;
+};
+
+export const XlTextArea: React.FC<XlTextAreaProps> = ({
+    value,
+    onChange,
+    placeholder = "Describe your idea here...",
+    disabled = false,
+    className = "",
+    rows = 3,
+    style = {},
+    ...rest
+}) => {
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = "auto";
+            textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+        }
+    }, [value]);
+
+    return (
+        <textarea
+            ref={textareaRef}
+            value={value}
+            onChange={onChange}
+            placeholder={placeholder}
+            disabled={disabled}
+            rows={rows}
+            className={`flex-grow p-4 rounded-lg bg-gray-800 resize-none w-full h-full text-base outline-none shadow-inner ${className}`}
+            style={{
+                scrollbarWidth: "thin",
+                scrollbarColor: "transparent transparent",
+                ...style,
+            }}
+            {...rest}
+        />
+    );
+};
 
 export default Input;

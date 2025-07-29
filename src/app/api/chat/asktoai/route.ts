@@ -7,6 +7,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function POST(req: NextRequest) {
     try {
+        console.log("Received request to ask AI...");
         const session = await getServerSession(authOptions);
         if (!session) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -15,14 +16,19 @@ export async function POST(req: NextRequest) {
         if (!chatId || !prompt) {
             return NextResponse.json({ error: 'chatId and prompt are required' }, { status: 400 });
         }
+
         await connectToDatabase();
+
+        const finalPrompt = `You are a helpful AI assistant. Answer the following question clearly and concisely:\n\n${prompt}`;
 
         // Send prompt to Gemini AI
         const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY as string);
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-        const result = await model.generateContent(prompt);
+        const result = await model.generateContent(finalPrompt);
         const response = await result.response;
         const aiReply = await response.text();
+
+        console.log("AI Reply:", aiReply);
 
         // Save AI reply as a message
         const now = new Date();
