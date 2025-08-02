@@ -76,7 +76,7 @@ const Home: React.FC = () => {
     return (
         <>
             {isFetching ?
-                <Container className='p-10 w-full   ml-24'>
+                <Container className='p-10 w-full ml-24'>
                     <DivFetchIndicator />
                 </Container>
                 :

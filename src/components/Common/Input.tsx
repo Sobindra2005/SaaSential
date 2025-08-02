@@ -126,11 +126,13 @@ export const TextArea = <T extends FieldValues>({
 interface ComboBoxProps {
     name: string;
     className?: string;
+    onClick?: () => void;
 }
 
-export const ComboBox: React.FC<ComboBoxProps> = ({ name, className = "" }) => (
+export const ComboBox: React.FC<ComboBoxProps> = ({ name, className = "", onClick }) => (
     <div
         className={`flex items-center cursor-pointer rounded-lg gap-1 bg-primary/40 hover:bg-primary/100 transition-colors px-3 py-1  absolute ${className}`}
+        onClick={onClick}
         style={{ width: "fit-content" }}
     >
         <span className="text-gray-400 text-sm">{name}</span>

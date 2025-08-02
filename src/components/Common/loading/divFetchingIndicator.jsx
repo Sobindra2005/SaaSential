@@ -2,7 +2,7 @@
 export const DivFetchIndicator = ({}) => {
     return (
     
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 w-full mt-24 capitalize">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 w-full capitalize">
                 {Array.from({ length: 6 }).map((_, i) => (
                     <div
                         key={i}

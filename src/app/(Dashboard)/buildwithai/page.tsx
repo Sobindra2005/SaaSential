@@ -7,16 +7,15 @@ import { FaCode, FaLightbulb, FaSearch } from 'react-icons/fa';
 import { useOutsideClick } from '@/components/hooks';
 import { IMessage } from '@/models/message';
 import { useSession } from 'next-auth/react';
-import AfterLoginHeader from '@/components/Layout/AfterLogin/Dashboard/header';
 import SendBox, { CreateMsgComponent } from './createMsg';
 import { Notification } from '@/components/Common/notification';
-import { Loader2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Lottie from "lottie-react";
 import loadingAnimation from "@/assets/animations/loading.json";
 import { useChatContext } from '../chatContext';
+import remarkGfm from 'remark-gfm';
 
 const fetchMessages = async (chatId: string) => {
     const response = await api.get(`/api/chat/message?chatId=${chatId}`);
@@ -33,14 +32,13 @@ const createChatApi = async (chatHeadClue: string) => {
     return response.data;
 }
 
-const createMsgApi = async ({ message, senderId, chatId }: { message: string; senderId: string; chatId: string }) => {
+const createMsgApi = async ({ message, senderId, chatId }: { message: string; senderId: string; chatId: string; }) => {
     const response = await api.post('/api/chat/message', { message, senderId, chatId });
     return response.data;
 }
 
-const messgaeAi = async ({ chatId, prompt }: { chatId: string; prompt: string }) => {
-    console.log("Sending message to AI:", prompt);
-    const response = await api.post('/api/chat/asktoai', { chatId, prompt });
+const messgaeAi = async ({ chatId, prompt, tool }: { chatId: string; prompt: string; tool: string }) => {
+    const response = await api.post('/api/chat/asktoai', { chatId, prompt, tool });
     return response.data;
 }
 
@@ -49,22 +47,21 @@ const tools = [{ name: 'Research', icon: <FaSearch size={20} /> }, { name: 'Brai
 export default function BuildWithAI() {
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [copy, setCopy] = useState(false);
     const [defaultTool, setDefaultTool] = useState('Develop');
     const [showList, setShowList] = useState(false);
     const [notification, setNotification] = useState({ visible: false, message: '', type: 'success' });
-    const [chatId, setChatId] = useState<string | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const { data } = useSession();
     const userId = data?.user.id;
-    const { newChat, changeContext } = useChatContext();
+    const { newChat, changeContext ,currentChatId, changeCurrentChatId } = useChatContext();
     const queryClient = useQueryClient();
 
     const AiReponse = useMutation({
         mutationFn: messgaeAi,
         onSuccess: (data) => {
             console.log("Chat created successfully:", data);
-            console.log("Chat ID:", chatId);
             queryClient.invalidateQueries({ queryKey: ['messages'] });
             setIsLoading(false);
         },
@@ -82,7 +79,7 @@ export default function BuildWithAI() {
                 setIsLoading(true);
             }, 1000);
             console.log("Message sent successfully:", data);
-            AiReponse.mutate({ chatId: data[0].chatId, prompt: data[0].message });
+            AiReponse.mutate({ chatId: data[0].chatId, prompt: data[0].message, tool: defaultTool });
         },
         onError: (error) => {
             console.error("Error creating message:", error);
@@ -100,10 +97,10 @@ export default function BuildWithAI() {
             createMsg.mutate({
                 message: input,
                 senderId: userId as string,
-                chatId: data?._id
+                chatId: data?._id,
             })
             changeContext(false);
-            setChatId(data?._id);
+            changeCurrentChatId(data?._id);
             queryClient.invalidateQueries({ queryKey: ['chatHistory'] });
         },
         onError: () => {
@@ -142,25 +139,30 @@ export default function BuildWithAI() {
         setShowList(false);
     }
 
-    const { data: chatHistory } = useQuery({
+    const { data: chatHistory , isLoading: isLoadingChatHistory , isSuccess: isSuccessChatHistory } = useQuery({
         queryKey: ['chatHistory'],
         queryFn: fetchChatHistory,
 
     })
 
-    const { data: messages } = useQuery({
+    const { data: messages , isLoading: isLoadingMessages } = useQuery({
         queryKey: ['messages'],
-        queryFn: () => fetchMessages((chatHistory as any)?.[0]?._id || ''),
-        enabled: (chatHistory as IMessage[])?.length > 0
+        queryFn: () => fetchMessages(currentChatId as string),
+        enabled: (chatHistory as IMessage[])?.length > 0 && !!currentChatId
     })
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
-    useEffect(() => {
-        console.log(newChat,"here is the value of newChat");
-    }, [messages]);
+useEffect(() => {
+  if (
+    isSuccessChatHistory &&
+    (!currentChatId || !(chatHistory as IMessage[])?.some((c: any) => c._id === currentChatId))
+  ) {
+    changeCurrentChatId((chatHistory as IMessage[])?.[0]?._id as string || null);
+  }
+}, [chatHistory, isSuccessChatHistory]);
 
     const handleCloseNotification = () => {
         setNotification(prev => ({ ...prev, visible: false }));
@@ -168,7 +170,7 @@ export default function BuildWithAI() {
 
     return (
 
-        <div className="flex flex-col items-center h-screen max-h-screen w-full bg-primary">
+        <div className="flex flex-col items-center w-full min-h-[70%] bg-primary">
             <div className="fixed top-5 right-5 z-50">
                 <Notification
                     type={notification.type}
@@ -180,8 +182,8 @@ export default function BuildWithAI() {
                 />
             </div>
 
-            <div className="flex-grow overflow-y-auto h-auto  relative right-0 top-[8%] p-6 flex items-center justify-center" id="chat-container">
-                {(newChat || (!Array.isArray(messages) || messages.length === 0)) ? (
+            <div className="flex-grow overflow-y-auto  w-full   relative right-0  p-6 flex items-center justify-center" id="chat-container">
+                {(newChat || (!Array.isArray(messages) || messages.length === 0))  ? (
                     <CreateMsgComponent
                         isLoading={isLoading}
                         defaultTool={defaultTool}
@@ -194,7 +196,7 @@ export default function BuildWithAI() {
                         onSubmit={handleCreateChat}
                     />
                 ) : (
-                    <div className="max-w-[70%] w-full  space-y-4 overflow">
+                    <div className="max-w-[70%]  w-full h-full space-y-4 overflow">
                         {(Array.isArray(messages) ? messages : []).map((message: IMessage, index: number) => (
                             <div
                                 key={index}
@@ -206,24 +208,43 @@ export default function BuildWithAI() {
                                         : ' text-gray-100 rounded-tl-lg rounded-tr-lg rounded-br-lg'
                                         } p-4 shadow-sm`}
                                 >
-
                                     <ReactMarkdown
+                                        remarkPlugins={[remarkGfm]}
                                         components={{
                                             code({ className, children, ...props }) {
-                                                // @ts-expect-error: 'inline' is not typed in the default props, but is present at runtime
+                                                // @ts-expect-error
                                                 const inline = props.inline;
                                                 const match = /language-(\w+)/.exec(className || '');
+                                                const codeString = String(children).replace(/\n$/, '');
+
                                                 return !inline && match ? (
-                                                    <SyntaxHighlighter
-                                                        style={oneDark}
-                                                        language={match[1]}
-                                                        PreTag="div"
-                                                        className="rounded-md my-2 text-sm"
-                                                    >
-                                                        {String(children).replace(/\n$/, '')}
-                                                    </SyntaxHighlighter>
+                                                    <div className="relative my-2 group">
+                                                        <button
+                                                            onClick={() => {
+                                                                navigator.clipboard.writeText(codeString)
+                                                                setCopy(true)
+                                                                setTimeout(() => {
+                                                                    setCopy(false);
+                                                                }, 3000);
+                                                            }}
+                                                            className="absolute top-2 right-2 z-10 bg-gray-600 text-xs px-2 py-1 rounded block   transition"
+                                                        >
+                                                            {copy ? "Copied" : "Copy"}
+                                                        </button>
+                                                        <SyntaxHighlighter
+                                                            style={oneDark}
+                                                            language={match[1]}
+                                                            PreTag="div"
+                                                            className="rounded-md text-sm"
+                                                        >
+                                                            {codeString}
+                                                        </SyntaxHighlighter>
+                                                    </div>
                                                 ) : (
-                                                    <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded" {...props}>
+                                                    <code
+                                                        className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded"
+                                                        {...props}
+                                                    >
                                                         {children}
                                                     </code>
                                                 );
@@ -234,16 +255,38 @@ export default function BuildWithAI() {
                                             p: ({ ...props }) => <p className="mb-2" {...props} />,
                                             ul: ({ ...props }) => <ul className="list-disc pl-5 mb-2" {...props} />,
                                             ol: ({ ...props }) => <ol className="list-decimal pl-5 mb-2" {...props} />,
+
+                                            table: ({ children }) => (
+                                                <div className="overflow-auto my-4">
+                                                    <table className="min-w-full border border-gray-300 dark:border-gray-700 text-sm">
+                                                        {children}
+                                                    </table>
+                                                </div>
+                                            ),
+                                            thead: ({ children }) => <thead className="bg-gray-100 dark:bg-gray-800">{children}</thead>,
+                                            tbody: ({ children }) => <tbody>{children}</tbody>,
+                                            tr: ({ children }) => <tr className="border-b border-gray-300 dark:border-gray-700">{children}</tr>,
+                                            th: ({ children }) => (
+                                                <th className="px-4 py-2 text-left font-semibold border border-gray-300 dark:border-gray-700">
+                                                    {children}
+                                                </th>
+                                            ),
+                                            td: ({ children }) => (
+                                                <td className="px-4 py-2 border border-gray-300 dark:border-gray-700">
+                                                    {children}
+                                                </td>
+                                            ),
                                         }}
                                     >
                                         {message.message}
                                     </ReactMarkdown>
+
                                 </div>
                             </div>
                         ))}
                         {isLoading && (
                             <div className="flex justify-start">
-                                <div className="bg-white w-[20rem] h-[20rem] dark:bg-gray-800 rounded-lg shadow-sm ">
+                                <div className=" w-[30rem] h-[30rem] ">
                                     <Lottie width={200} height={200} animationData={loadingAnimation} loop={true} />
                                 </div>
                             </div>
@@ -253,9 +296,9 @@ export default function BuildWithAI() {
                 )}
             </div>
 
-            {!newChat && (!Array.isArray(messages) || messages.length > 0)
+            {(!newChat && Array.isArray(messages) && messages.length > 0) && (!isLoadingMessages && !isLoadingChatHistory)
                 && (
-                    <div className="p-4 flex w-full justify-center">
+                    <div className="p-4 flex w-full sticky bottom-0 right-0 justify-center">
                         <SendBox
                             input={input}
                             setInput={setInput}

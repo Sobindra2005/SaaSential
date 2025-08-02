@@ -1,46 +1,51 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { Message } from '@/models/message';
-import { connectToDatabase } from '@/lib/mongodb';
-import { authOptions } from '@/lib/auth';
-import { getServerSession } from 'next-auth';
+import { authOptions } from "@/lib/auth";
+import { connectToDatabase } from "@/lib/mongodb";
+import { Message } from "@/models/message";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
+import { checkToolSwitch, detectTool, toolPrompts } from "./helperFunction";
 
 export async function POST(req: NextRequest) {
     try {
-        console.log("Received request to ask AI...");
         const session = await getServerSession(authOptions);
         if (!session) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
-        const { chatId, prompt } = await req.json();
+        
+        const { chatId, prompt, tool } = await req.json();
         if (!chatId || !prompt) {
             return NextResponse.json({ error: 'chatId and prompt are required' }, { status: 400 });
         }
 
         await connectToDatabase();
-        const finalPrompt = `
-You are a knowledgeable and helpful AI assistant.
-Your task is to provide the most accurate, well-structured, and concise answer to the user's question.
 
-- Think step-by-step.
-- Research the topic as if you have access to reliable sources.
-- Include real-world examples if relevant.
-- Use bullet points or numbered lists where it improves clarity.
-- Format responses with markdown-style formatting (like headings, code blocks, and bold/italic text).
+        type ToolType = keyof typeof toolPrompts;
+        let selectedTool: ToolType = (tool as ToolType) || 'Brainstorm'; 
+        
+       const switchedTool = checkToolSwitch(prompt, selectedTool);
+        if (switchedTool !== selectedTool && switchedTool !== detectTool(prompt)) {
+            selectedTool = switchedTool as ToolType;
+        }
 
-Question:
-${prompt}
-`;
+        // Get the appropriate prompt for the selected tool
+        const finalPrompt = toolPrompts[selectedTool] + prompt;
+
         // Send prompt to Gemini AI
         const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY as string);
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const model = genAI.getGenerativeModel({ 
+            model: "gemini-2.0-flash",
+            generationConfig: {
+                temperature: selectedTool === 'Develop' ? 0.3 : 0.7,
+                maxOutputTokens: selectedTool === 'Develop' ? 4096 : 2048,
+            }
+        });
+        
         const result = await model.generateContent(finalPrompt);
         const response = await result.response;
         const aiReply = await response.text();
 
-        console.log("AI Reply:", aiReply);
-
-        // Save AI reply as a message
+        // Save AI reply as a message with tool info
         const now = new Date();
         const time = now.toTimeString().split(' ')[0];
         const aiMessage = await Message.create({
@@ -48,13 +53,22 @@ ${prompt}
             chatId,
             senderId: "ai",
             message: aiReply,
+            tool: selectedTool, // Save which tool was used
             date: now,
             time
         });
 
-        return NextResponse.json(aiMessage, { status: 201 });
+        // Return response with tool information
+        return NextResponse.json({
+            ...aiMessage.toObject(),
+            toolUsed: selectedTool,
+            toolSwitched: selectedTool !== tool
+        }, { status: 201 });
+
     } catch (error) {
-        console.error(error);
-        return NextResponse.json({ error: "An error occurred." }, { status: 500 });
+        console.error('API Error:', error);
+        return NextResponse.json({ 
+            error: "An error occurred while processing your request." 
+        }, { status: 500 });
     }
 }

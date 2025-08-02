@@ -8,7 +8,6 @@ export async function GET(req: NextRequest) {
     const chatId = req.nextUrl.searchParams.get('chatId');
     const session = await getServerSession(authOptions);
 
-    console.log("is fetching")
     if (!session) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -17,7 +16,7 @@ export async function GET(req: NextRequest) {
     }
 
     await connectToDatabase();
-    console.log('Fetching messages for chatId:', chatId);
+
     const messages = await Message.find({ chatId, userId: session.user.id }).sort({ date: 1, time: 1 });
     return NextResponse.json(messages);
 }

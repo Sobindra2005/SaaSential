@@ -12,7 +12,7 @@ const Sidebar = () => {
     const pathname = usePathname();
     const isBuildWithAiPage = pathname.includes('buildwithai');
     const queryClient = useQueryClient();
-    const { newChat, changeContext } = useChatContext();
+    const { newChat, changeContext, currentChatId, changeCurrentChatId } = useChatContext();
     const chatHistory = queryClient.getQueryData(['chatHistory']);
 
     const toggleSidebar = () => {
@@ -22,7 +22,7 @@ const Sidebar = () => {
     const sidebarItems = [
         { icon: Blocks, link: 'home', label: 'Projects' },
         { icon: Workflow, link: 'template', label: 'Templates' },
-        { icon: BrainCog, link: 'buildwithai', label: 'Build with Ai' },
+        { icon: BrainCog, link: 'buildwithai', label: 'Build with victoria' },
     ];
 
     useEffect(() => {
@@ -55,8 +55,9 @@ const Sidebar = () => {
                                 ) : (
                                     chatHistory.map((message, index) => (
                                         <li
+                                            onClick={() => changeCurrentChatId(message._id)}
                                             key={message._id}
-                                            className={`flex items-center py-3 px-2 ${index === 0 ? 'bg-gray-900' : ''} hover:bg-gray-900 overflow-hidden w-full cursor-default`}
+                                            className={`flex items-center py-3 px-2 ${message._id === currentChatId ? 'bg-gray-900' : ''} hover:bg-gray-900 overflow-hidden w-full cursor-default`}
                                         >
                                             <span className="text-gray-400 text-sm truncate">{message.chatHead}</span>
                                         </li>

@@ -39,7 +39,7 @@ export const CreateMsgComponent: React.FC<CreateMsgProps> = ({
 
     return (
         <div>
-            <div className="flex flex-col items-center justify-center w-full  h-[60vh] rounded-xl  p-8">
+            <div className="flex flex-col items-center justify-center w-full  h-[60vh] rounded-xl sticky top-[1/2] right-[1/2]  p-8">
                 <Bot size={56} className="mb-6 text-blue-500" />
                 <h2 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">Start Building with AI</h2>
                 <p className="mb-6 text-gray-500 dark:text-gray-400 text-center max-w-md">
@@ -112,7 +112,7 @@ const SendBox: React.FC<SendBoxProps> = ({
                     disabled={isLoading}
                     rows={3}
                 />
-                <ComboBox name={defaultTool} className='absolute bottom-[10px] right-[2px]' />
+                <ComboBox onClick={() => setShowList(!showList)} name={defaultTool} className='absolute bottom-[10px] right-[2px]' />
             </div>
             <div className='flex flex-col gap-3 justify-center items-center relative'>
                 {showList && (
