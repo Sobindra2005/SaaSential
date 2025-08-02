@@ -90,9 +90,10 @@ const SendBox: React.FC<SendBoxProps> = ({
     containerRef
 }) => {
     return (
-        <form onSubmit={onSubmit} className="w-full max-w-xl flex gap-3 items-center justify-center">
-            <div className='w-full h-full relative'>
+        <form onSubmit={onSubmit} className="w-full max-w-2xl  flex gap-3 items-center justify-center">
+            <div className='w-full  h-full relative'>
                 <XlTextArea
+                className='w-full '
                     value={input}
                     onChange={(e) => {
                         setInput(e.target.value);

@@ -16,6 +16,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Lottie from "lottie-react";
 import loadingAnimation from "@/assets/animations/loading.json";
+import { useChatContext } from '../chatContext';
 
 const fetchMessages = async (chatId: string) => {
     const response = await api.get(`/api/chat/message?chatId=${chatId}`);
@@ -56,7 +57,7 @@ export default function BuildWithAI() {
     const containerRef = useRef<HTMLDivElement>(null);
     const { data } = useSession();
     const userId = data?.user.id;
-
+    const { newChat, changeContext } = useChatContext();
     const queryClient = useQueryClient();
 
     const AiReponse = useMutation({
@@ -101,6 +102,7 @@ export default function BuildWithAI() {
                 senderId: userId as string,
                 chatId: data?._id
             })
+            changeContext(false);
             setChatId(data?._id);
             queryClient.invalidateQueries({ queryKey: ['chatHistory'] });
         },
@@ -122,6 +124,7 @@ export default function BuildWithAI() {
         if (!input.trim()) return;
         setIsLoading(true);
         createChat.mutate(input.trim());
+
     };
 
     const handleSendMessage = async (e: FormEvent<HTMLFormElement>) => {
@@ -156,6 +159,7 @@ export default function BuildWithAI() {
     }, [messages]);
 
     useEffect(() => {
+        console.log(newChat,"here is the value of newChat");
     }, [messages]);
 
     const handleCloseNotification = () => {
@@ -164,11 +168,7 @@ export default function BuildWithAI() {
 
     return (
 
-        <div className="flex flex-col h-screen max-h-screen w-full bg-primary">
-            <div className='w-full relative h-[5.6rem]'>
-                <AfterLoginHeader render={false} />
-            </div>
-
+        <div className="flex flex-col items-center h-screen max-h-screen w-full bg-primary">
             <div className="fixed top-5 right-5 z-50">
                 <Notification
                     type={notification.type}
@@ -180,8 +180,8 @@ export default function BuildWithAI() {
                 />
             </div>
 
-            <div className="flex-grow overflow-y-auto h-auto   p-6 flex items-center justify-center" id="chat-container">
-                {!messages || (messages as IMessage[]).length === 0 ? (
+            <div className="flex-grow overflow-y-auto h-auto  relative right-0 top-[8%] p-6 flex items-center justify-center" id="chat-container">
+                {(newChat || (!Array.isArray(messages) || messages.length === 0)) ? (
                     <CreateMsgComponent
                         isLoading={isLoading}
                         defaultTool={defaultTool}
@@ -194,7 +194,7 @@ export default function BuildWithAI() {
                         onSubmit={handleCreateChat}
                     />
                 ) : (
-                    <div className="max-w-[80%] w-full space-y-4 overflow">
+                    <div className="max-w-[70%] w-full  space-y-4 overflow">
                         {(Array.isArray(messages) ? messages : []).map((message: IMessage, index: number) => (
                             <div
                                 key={index}
@@ -202,8 +202,8 @@ export default function BuildWithAI() {
                             >
                                 <div
                                     className={` max-w-[80%]  ${((message.senderId as unknown) as string) === userId
-                                        ? 'bg-blue-600 text-white rounded-tl-lg rounded-tr-lg rounded-bl-lg'
-                                        : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-tl-lg rounded-tr-lg rounded-br-lg'
+                                        ? 'bg-gray-800 text-gray-100 rounded-tl-lg rounded-tr-lg rounded-bl-lg'
+                                        : ' text-gray-100 rounded-tl-lg rounded-tr-lg rounded-br-lg'
                                         } p-4 shadow-sm`}
                                 >
 
@@ -244,7 +244,7 @@ export default function BuildWithAI() {
                         {isLoading && (
                             <div className="flex justify-start">
                                 <div className="bg-white w-[20rem] h-[20rem] dark:bg-gray-800 rounded-lg shadow-sm ">
-                                   <Lottie width={200} height={200} animationData={loadingAnimation} loop={true} />
+                                    <Lottie width={200} height={200} animationData={loadingAnimation} loop={true} />
                                 </div>
                             </div>
                         )}
@@ -253,9 +253,9 @@ export default function BuildWithAI() {
                 )}
             </div>
 
-            {!!messages && (messages as IMessage[]).length > 0
+            {!newChat && (!Array.isArray(messages) || messages.length > 0)
                 && (
-                    <div className="p-4 flex justify-center">
+                    <div className="p-4 flex w-full justify-center">
                         <SendBox
                             input={input}
                             setInput={setInput}

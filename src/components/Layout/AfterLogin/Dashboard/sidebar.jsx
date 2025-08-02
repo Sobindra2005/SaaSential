@@ -4,14 +4,15 @@ import { motion } from 'framer-motion';
 import { Blocks, PanelLeftOpen, PanelRightOpen, Workflow, BrainCog, PenBoxIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useQueryClient} from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
+import { useChatContext } from '@/app/(Dashboard)/chatContext';
 
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
     const isBuildWithAiPage = pathname.includes('buildwithai');
     const queryClient = useQueryClient();
-
+    const { newChat, changeContext } = useChatContext();
     const chatHistory = queryClient.getQueryData(['chatHistory']);
 
     const toggleSidebar = () => {
@@ -30,7 +31,7 @@ const Sidebar = () => {
 
     return (
         <motion.div
-            className={`text-white border-r ${isBuildWithAiPage ? 'bg-primary' : 'bg-primary'} z-50 border-gray-800 h-screen fixed top-[11.7%] xl:top-[10%] overflow-hidden`}
+            className={`text-white border-r ${isBuildWithAiPage ? 'bg-primary' : 'bg-primary'} z-50 border-gray-800 h-screen fixed  overflow-hidden`}
             animate={{ width: isOpen ? 200 : 60 }}
             transition={{ duration: 0.2 }}
         >
@@ -41,7 +42,7 @@ const Sidebar = () => {
             </div>
             <nav className="mt-4 w-full">
                 {isBuildWithAiPage &&
-                    <div className={`flex gap-3 px-2 pb-5 cursor-pointer w-full  ${isOpen ? '' : 'justify-center'} items-center `}>
+                    <div onClick={() => changeContext(true)} className={`flex gap-3 px-2 pb-5 cursor-pointer w-full  ${isOpen ? '' : 'justify-center'} items-center `}>
                         <PenBoxIcon size={24} />{isOpen && <span className="text-gray-400 hover:text-gray-100 text-md truncate">New chat</span>}
                     </div>
                 }
