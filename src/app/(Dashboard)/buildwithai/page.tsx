@@ -14,6 +14,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Lottie from "lottie-react";
 import loadingAnimation from "@/assets/animations/loading.json";
+import textLoading from "@/assets/animations/textLoading.json";
 import { useChatContext } from '../chatContext';
 import remarkGfm from 'remark-gfm';
 
@@ -55,7 +56,7 @@ export default function BuildWithAI() {
     const containerRef = useRef<HTMLDivElement>(null);
     const { data } = useSession();
     const userId = data?.user.id;
-    const { newChat, changeContext ,currentChatId, changeCurrentChatId } = useChatContext();
+    const { newChat, changeContext, currentChatId, changeCurrentChatId } = useChatContext();
     const queryClient = useQueryClient();
 
     const AiReponse = useMutation({
@@ -79,7 +80,7 @@ export default function BuildWithAI() {
                 setIsLoading(true);
             }, 1000);
             console.log("Message sent successfully:", data);
-            AiReponse.mutate({ chatId: data[0].chatId, prompt: data[0].message, tool: defaultTool });
+            AiReponse.mutate({ chatId: currentChatId as string, prompt: data[0].message, tool: defaultTool });
         },
         onError: (error) => {
             console.error("Error creating message:", error);
@@ -130,7 +131,7 @@ export default function BuildWithAI() {
         createMsg.mutate({
             message: input,
             senderId: userId as string,
-            chatId: (chatHistory as any)?.[0]?._id || ''
+            chatId: currentChatId as string,
         })
     };
 
@@ -139,14 +140,14 @@ export default function BuildWithAI() {
         setShowList(false);
     }
 
-    const { data: chatHistory , isLoading: isLoadingChatHistory , isSuccess: isSuccessChatHistory } = useQuery({
+    const { data: chatHistory, isLoading: isLoadingChatHistory, isSuccess: isSuccessChatHistory } = useQuery({
         queryKey: ['chatHistory'],
         queryFn: fetchChatHistory,
 
     })
 
-    const { data: messages , isLoading: isLoadingMessages } = useQuery({
-        queryKey: ['messages'],
+    const { data: messages, isLoading: isLoadingMessages } = useQuery({
+        queryKey: ['messages', currentChatId],
         queryFn: () => fetchMessages(currentChatId as string),
         enabled: (chatHistory as IMessage[])?.length > 0 && !!currentChatId
     })
@@ -155,14 +156,14 @@ export default function BuildWithAI() {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
-useEffect(() => {
-  if (
-    isSuccessChatHistory &&
-    (!currentChatId || !(chatHistory as IMessage[])?.some((c: any) => c._id === currentChatId))
-  ) {
-    changeCurrentChatId((chatHistory as IMessage[])?.[0]?._id as string || null);
-  }
-}, [chatHistory, isSuccessChatHistory]);
+    useEffect(() => {
+        if (
+            isSuccessChatHistory &&
+            (!currentChatId || !(chatHistory as IMessage[])?.some((c: any) => c._id === currentChatId))
+        ) {
+            changeCurrentChatId((chatHistory as IMessage[])?.[0]?._id as string || null);
+        }
+    }, [chatHistory, isSuccessChatHistory]);
 
     const handleCloseNotification = () => {
         setNotification(prev => ({ ...prev, visible: false }));
@@ -183,7 +184,7 @@ useEffect(() => {
             </div>
 
             <div className="flex-grow overflow-y-auto  w-full   relative right-0  p-6 flex items-center justify-center" id="chat-container">
-                {(newChat || (!Array.isArray(messages) || messages.length === 0))  ? (
+                {(newChat || (!Array.isArray(messages) || messages.length === 0)) ? (
                     <CreateMsgComponent
                         isLoading={isLoading}
                         defaultTool={defaultTool}
@@ -284,10 +285,17 @@ useEffect(() => {
                                 </div>
                             </div>
                         ))}
-                        {isLoading && (
+                        {isLoading  && (
+                            defaultTool === 'Develop' ?
                             <div className="flex justify-start">
                                 <div className=" w-[30rem] h-[30rem] ">
                                     <Lottie width={200} height={200} animationData={loadingAnimation} loop={true} />
+                                </div>
+                            </div>
+                            :
+                            <div className="flex justify-start">
+                                <div className=" w-[4rem] h-[4rem] ">
+                                   <Lottie width={200} height={200} animationData={textLoading} loop={true} />
                                 </div>
                             </div>
                         )}

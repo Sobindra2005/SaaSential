@@ -25,9 +25,6 @@ const Sidebar = () => {
         { icon: BrainCog, link: 'buildwithai', label: 'Build with victoria' },
     ];
 
-    useEffect(() => {
-        console.log("Sidebar mounted, checking chat history...", chatHistory);
-    }, [chatHistory])
 
     return (
         <motion.div
