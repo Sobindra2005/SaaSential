@@ -94,6 +94,7 @@ export default function BuildWithAI() {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [streamingMessage, setStreamingMessage] = useState('');
+    const [displayedMessage, setDisplayedMessage] = useState('');
     const { data } = useSession();
     const userId = data?.user.id;
     const { newChat, changeContext, currentChatId, changeCurrentChatId } = useChatContext();
@@ -195,7 +196,33 @@ export default function BuildWithAI() {
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages,streamingMessage, isLoading]);
+    }, [messages, streamingMessage, isLoading]);
+
+    useEffect(() => {
+        if (!streamingMessage) {
+            setDisplayedMessage('');
+            return;
+        }
+        // If displayedMessage is already up to date, do nothing
+        if (displayedMessage === streamingMessage) return;
+
+        let currentIndex = displayedMessage.length;
+        let animationFrame: number;
+
+        const typeNext = () => {
+            if (currentIndex < streamingMessage.length) {
+                setDisplayedMessage(prev => prev + streamingMessage[currentIndex]);
+                currentIndex++;
+                animationFrame = window.setTimeout(typeNext, 0);
+            }
+        };
+
+        typeNext();
+
+        return () => {
+            clearTimeout(animationFrame);
+        };
+    }, [streamingMessage]);
 
 
     useEffect(() => {
@@ -259,7 +286,7 @@ export default function BuildWithAI() {
                         {isLoading && streamingMessage && (
                             <div className="flex justify-start">
                                 <div className="max-w-[80%] text-gray-100 rounded-tl-lg rounded-tr-lg rounded-br-lg p-4 shadow-sm">
-                                    <ResponseManager message={streamingMessage as string} />
+                                    <ResponseManager message={displayedMessage} />
                                     <span className="animate-pulse ml-1">▍</span>
                                 </div>
                             </div>
