@@ -38,39 +38,80 @@ const createMsgApi = async ({ message, senderId, chatId }: { message: string; se
     return response.data;
 }
 
-const messgaeAi = async ({ chatId, prompt, tool }: { chatId: string; prompt: string; tool: string }) => {
-    const response = await api.post('/api/chat/asktoai', { chatId, prompt, tool });
-    return response.data;
-}
+const messgaeAi = async (
+    { chatId, prompt, tool }: { chatId: string; prompt: string; tool: string },
+    onStream?: (chunk: string) => void
+) => {
+    const response = await fetch('/api/chat/asktoai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chatId, prompt, tool }),
+    });
+
+    if (!response.body) throw new Error('No response body');
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    let responseText = '';
+    let buffer = '';
+
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        // Process all complete lines
+        let lines = buffer.split('\n');
+        buffer = lines.pop() || ''; // Save incomplete line for next chunk
+
+        for (let line of lines) {
+            if (line.startsWith('data: ')) {
+                const text = line.replace('data: ', '');
+                responseText += text;
+                if (onStream) onStream(responseText);
+            }
+        }
+    }
+
+    // Process any remaining buffer
+    if (buffer.startsWith('data: ')) {
+        const text = buffer.replace('data: ', '');
+        responseText += text;
+        if (onStream) onStream(responseText);
+    }
+
+    return responseText;
+};
 
 const tools = [{ name: 'Research', icon: <FaSearch size={20} /> }, { name: 'Brainstorm', icon: <FaLightbulb size={20} /> }, { name: 'Develop', icon: <FaCode size={20} /> }];
 
 export default function BuildWithAI() {
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [copy, setCopy] = useState(false);
     const [defaultTool, setDefaultTool] = useState('Develop');
     const [showList, setShowList] = useState(false);
     const [notification, setNotification] = useState({ visible: false, message: '', type: 'success' });
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const [streamingMessage, setStreamingMessage] = useState('');
     const { data } = useSession();
     const userId = data?.user.id;
     const { newChat, changeContext, currentChatId, changeCurrentChatId } = useChatContext();
     const queryClient = useQueryClient();
 
     const AiReponse = useMutation({
-        mutationFn: messgaeAi,
+        mutationFn: (params: { chatId: string; prompt: string; tool: string }) =>
+            messgaeAi(params, (text) => setStreamingMessage(text)),
         onSuccess: (data) => {
-            console.log("Chat created successfully:", data);
+            setStreamingMessage('');
             queryClient.invalidateQueries({ queryKey: ['messages'] });
             setIsLoading(false);
         },
         onError: (error) => {
+            setStreamingMessage('');
             console.error("Error creating chat:", error);
         }
     });
-
     const createMsg = useMutation({
         mutationFn: createMsgApi,
         onSuccess: (data: any) => {
@@ -154,7 +195,8 @@ export default function BuildWithAI() {
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
+    }, [messages,streamingMessage, isLoading]);
+
 
     useEffect(() => {
         if (
@@ -209,95 +251,33 @@ export default function BuildWithAI() {
                                         : ' text-gray-100 rounded-tl-lg rounded-tr-lg rounded-br-lg'
                                         } p-4 shadow-sm`}
                                 >
-                                    <ReactMarkdown
-                                        remarkPlugins={[remarkGfm]}
-                                        components={{
-                                            code({ className, children, ...props }) {
-                                                // @ts-expect-error
-                                                const inline = props.inline;
-                                                const match = /language-(\w+)/.exec(className || '');
-                                                const codeString = String(children).replace(/\n$/, '');
-
-                                                return !inline && match ? (
-                                                    <div className="relative my-2 group">
-                                                        <button
-                                                            onClick={() => {
-                                                                navigator.clipboard.writeText(codeString)
-                                                                setCopy(true)
-                                                                setTimeout(() => {
-                                                                    setCopy(false);
-                                                                }, 3000);
-                                                            }}
-                                                            className="absolute top-2 right-2 z-10 bg-gray-600 text-xs px-2 py-1 rounded block   transition"
-                                                        >
-                                                            {copy ? "Copied" : "Copy"}
-                                                        </button>
-                                                        <SyntaxHighlighter
-                                                            style={oneDark}
-                                                            language={match[1]}
-                                                            PreTag="div"
-                                                            className="rounded-md text-sm"
-                                                        >
-                                                            {codeString}
-                                                        </SyntaxHighlighter>
-                                                    </div>
-                                                ) : (
-                                                    <code
-                                                        className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded"
-                                                        {...props}
-                                                    >
-                                                        {children}
-                                                    </code>
-                                                );
-                                            },
-                                            a: ({ ...props }) => (
-                                                <a {...props} className="text-blue-500 underline" />
-                                            ),
-                                            p: ({ ...props }) => <p className="mb-2" {...props} />,
-                                            ul: ({ ...props }) => <ul className="list-disc pl-5 mb-2" {...props} />,
-                                            ol: ({ ...props }) => <ol className="list-decimal pl-5 mb-2" {...props} />,
-
-                                            table: ({ children }) => (
-                                                <div className="overflow-auto my-4">
-                                                    <table className="min-w-full border border-gray-300 dark:border-gray-700 text-sm">
-                                                        {children}
-                                                    </table>
-                                                </div>
-                                            ),
-                                            thead: ({ children }) => <thead className="bg-gray-100 dark:bg-gray-800">{children}</thead>,
-                                            tbody: ({ children }) => <tbody>{children}</tbody>,
-                                            tr: ({ children }) => <tr className="border-b border-gray-300 dark:border-gray-700">{children}</tr>,
-                                            th: ({ children }) => (
-                                                <th className="px-4 py-2 text-left font-semibold border border-gray-300 dark:border-gray-700">
-                                                    {children}
-                                                </th>
-                                            ),
-                                            td: ({ children }) => (
-                                                <td className="px-4 py-2 border border-gray-300 dark:border-gray-700">
-                                                    {children}
-                                                </td>
-                                            ),
-                                        }}
-                                    >
-                                        {message.message}
-                                    </ReactMarkdown>
-
+                                    <ResponseManager message={message.message as string} />
                                 </div>
                             </div>
                         ))}
-                        {isLoading  && (
+
+                        {isLoading && streamingMessage && (
+                            <div className="flex justify-start">
+                                <div className="max-w-[80%] text-gray-100 rounded-tl-lg rounded-tr-lg rounded-br-lg p-4 shadow-sm">
+                                    <ResponseManager message={streamingMessage as string} />
+                                    <span className="animate-pulse ml-1">▍</span>
+                                </div>
+                            </div>
+                        )}
+
+                        {isLoading && !streamingMessage && (
                             defaultTool === 'Develop' ?
-                            <div className="flex justify-start">
-                                <div className=" w-[30rem] h-[30rem] ">
-                                    <Lottie width={200} height={200} animationData={loadingAnimation} loop={true} />
+                                <div className="flex justify-start">
+                                    <div className=" w-[30rem] h-[30rem] ">
+                                        <Lottie width={200} height={200} animationData={loadingAnimation} loop={true} />
+                                    </div>
                                 </div>
-                            </div>
-                            :
-                            <div className="flex justify-start">
-                                <div className=" w-[4rem] h-[4rem] ">
-                                   <Lottie width={200} height={200} animationData={textLoading} loop={true} />
+                                :
+                                <div className="flex justify-start">
+                                    <div className=" w-[4rem] h-[4rem] ">
+                                        <Lottie width={200} height={200} animationData={textLoading} loop={true} />
+                                    </div>
                                 </div>
-                            </div>
                         )}
                         <div ref={messagesEndRef} />
                     </div>
@@ -325,4 +305,84 @@ export default function BuildWithAI() {
 
         </div>
     );
+}
+
+
+export const ResponseManager = ({ message }: { message: string }) => {
+    const [copy, setCopy] = useState(false);
+
+    return (
+        <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+                code({ className, children, ...props }) {
+                    // @ts-expect-error
+                    const inline = props.inline;
+                    const match = /language-(\w+)/.exec(className || '');
+                    const codeString = String(children).replace(/\n$/, '');
+
+                    return !inline && match ? (
+                        <div className="relative my-2 group">
+                            <button
+                                onClick={() => {
+                                    navigator.clipboard.writeText(codeString)
+                                    setCopy(true)
+                                    setTimeout(() => {
+                                        setCopy(false);
+                                    }, 3000);
+                                }}
+                                className="absolute top-2 right-2 z-10 bg-gray-600 text-xs px-2 py-1 rounded block   transition"
+                            >
+                                {copy ? "Copied" : "Copy"}
+                            </button>
+                            <SyntaxHighlighter
+                                style={oneDark}
+                                language={match[1]}
+                                PreTag="div"
+                                className="rounded-md text-sm"
+                            >
+                                {codeString}
+                            </SyntaxHighlighter>
+                        </div>
+                    ) : (
+                        <code
+                            className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded"
+                            {...props}
+                        >
+                            {children}
+                        </code>
+                    );
+                },
+                a: ({ ...props }) => (
+                    <a {...props} className="text-blue-500 underline" />
+                ),
+                p: ({ ...props }) => <p className="mb-2" {...props} />,
+                ul: ({ ...props }) => <ul className="list-disc pl-5 mb-2" {...props} />,
+                ol: ({ ...props }) => <ol className="list-decimal pl-5 mb-2" {...props} />,
+
+                table: ({ children }) => (
+                    <div className="overflow-auto my-4">
+                        <table className="min-w-full border border-gray-300 dark:border-gray-700 text-sm">
+                            {children}
+                        </table>
+                    </div>
+                ),
+                thead: ({ children }) => <thead className="bg-gray-100 dark:bg-gray-800">{children}</thead>,
+                tbody: ({ children }) => <tbody>{children}</tbody>,
+                tr: ({ children }) => <tr className="border-b border-gray-300 dark:border-gray-700">{children}</tr>,
+                th: ({ children }) => (
+                    <th className="px-4 py-2 text-left font-semibold border border-gray-300 dark:border-gray-700">
+                        {children}
+                    </th>
+                ),
+                td: ({ children }) => (
+                    <td className="px-4 py-2 border border-gray-300 dark:border-gray-700">
+                        {children}
+                    </td>
+                ),
+            }}
+        >
+            {message}
+        </ReactMarkdown>
+    )
 }
