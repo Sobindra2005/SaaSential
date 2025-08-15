@@ -54,6 +54,12 @@ const messgaeAi = async (
 
     let responseText = '';
     let buffer = '';
+    let markdownContext = {
+        inCodeBlock: false,
+        inTable: false,
+        inList: false,
+        codeLanguage: ''
+    };
 
     while (true) {
         const { done, value } = await reader.read();
@@ -67,6 +73,19 @@ const messgaeAi = async (
         for (let line of lines) {
             if (line.startsWith('data: ')) {
                 const text = line.replace('data: ', '');
+                
+                // Update markdown context based on the content
+                if (text.includes('```')) {
+                    markdownContext.inCodeBlock = !markdownContext.inCodeBlock;
+                    if (markdownContext.inCodeBlock) {
+                        // Try to extract language if this is an opening block
+                        const langMatch = text.match(/```(\w+)/);
+                        markdownContext.codeLanguage = langMatch ? langMatch[1] : '';
+                    }
+                }
+                if (text.includes('|')) markdownContext.inTable = true;
+                if (text.match(/^[*-] /) || text.match(/^\d+\. /)) markdownContext.inList = true;
+                
                 responseText += text;
                 if (onStream) onStream(responseText);
             }
@@ -198,33 +217,93 @@ export default function BuildWithAI() {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages, streamingMessage, isLoading]);
 
-    useEffect(() => {
-        if (!streamingMessage) {
-            setDisplayedMessage('');
+useEffect(() => {
+    if (!streamingMessage) {
+        setDisplayedMessage('');
+        return;
+    }
+
+    // Skip if already caught up
+    if (displayedMessage === streamingMessage) return;
+
+    let rafId: number;
+    let lastTs = performance.now();
+    let currentIndex = displayedMessage.length;
+
+    const CHARS_PER_SECOND = 5000; // Increase for faster typing
+    const CATCHUP_FACTOR = 0.25;   // How fast to catch up when far behind
+    const MAX_CHARS_PER_FRAME = 200; // Safety limit
+
+    // Detect markdown boundaries - add paragraph breaks
+    const mdBoundaries = [
+        // Code blocks
+        {...streamingMessage.matchAll(/```/g)},
+        // Headers
+        {...streamingMessage.matchAll(/^#{1,6}\s/gm)},
+        // List items
+        {...streamingMessage.matchAll(/^[*-]\s/gm)},
+        // Numbered list items
+        {...streamingMessage.matchAll(/^\d+\.\s/gm)},
+        // Table rows
+        {...streamingMessage.matchAll(/\|.*\|/g)},
+        // Paragraph breaks (double newlines)
+        {...streamingMessage.matchAll(/\n\n/g)},
+        // Sentence endings that should create paragraph breaks
+        {...streamingMessage.matchAll(/[.!?]\s/g)},
+        // Blockquotes
+        {...streamingMessage.matchAll(/^>/gm)},
+    ].flat().map(match => match.index).filter(Boolean).sort((a, b) => a - b);
+
+    const animateTyping = (timestamp: number) => {
+        const elapsed = timestamp - lastTs;
+        lastTs = timestamp;
+
+        // Calculate how many characters to reveal this frame
+        const remaining = streamingMessage.length - currentIndex;
+
+        if (remaining <= 0) {
+            setDisplayedMessage(streamingMessage);
             return;
         }
-        // If displayedMessage is already up to date, do nothing
-        if (displayedMessage === streamingMessage) return;
 
-        let currentIndex = displayedMessage.length;
-        let animationFrame: number;
+        // Add more characters at once when we're further behind
+        let charsToAdd = Math.ceil((elapsed / 1000) * CHARS_PER_SECOND) +
+            Math.floor(remaining * CATCHUP_FACTOR);
 
-        const typeNext = () => {
-            if (currentIndex < streamingMessage.length) {
-                setDisplayedMessage(prev => prev + streamingMessage[currentIndex]);
-                currentIndex++;
-                animationFrame = window.setTimeout(typeNext, 0);
+        // Cap to avoid huge jumps
+        charsToAdd = Math.min(charsToAdd, MAX_CHARS_PER_FRAME, remaining);
+
+        // Snap to markdown boundaries when possible
+        let nextIndex = currentIndex + charsToAdd;
+        
+        // Find the nearest boundary, prioritizing sentence/paragraph breaks
+        const nearestBoundary = mdBoundaries.find(idx => idx > currentIndex && idx <= nextIndex);
+        if (nearestBoundary) {
+            nextIndex = nearestBoundary;
+            
+            // If we're at a sentence ending, add extra characters to include the next few words
+            // This makes the text flow more naturally
+            if (streamingMessage[nearestBoundary-1]?.match(/[.!?]/)) {
+                const nextSpace = streamingMessage.indexOf(' ', nearestBoundary + 1);
+                if (nextSpace > 0 && nextSpace <= nextIndex + 15) { // Look ahead up to 15 chars
+                    nextIndex = nextSpace;
+                }
             }
-        };
+        }
 
-        typeNext();
+        // Update the displayed text
+        currentIndex = nextIndex;
+        setDisplayedMessage(autoCloseMarkdown(streamingMessage.substring(0, currentIndex)));
 
-        return () => {
-            clearTimeout(animationFrame);
-        };
-    }, [streamingMessage]);
+        // Continue animation if not done
+        if (currentIndex < streamingMessage.length) {
+            rafId = requestAnimationFrame(animateTyping);
+        }
+    };
 
-
+    rafId = requestAnimationFrame(animateTyping);
+    return () => cancelAnimationFrame(rafId);
+}, [streamingMessage]);
     useEffect(() => {
         if (
             isSuccessChatHistory &&
@@ -282,12 +361,13 @@ export default function BuildWithAI() {
                                 </div>
                             </div>
                         ))}
-
                         {isLoading && streamingMessage && (
                             <div className="flex justify-start">
                                 <div className="max-w-[80%] text-gray-100 rounded-tl-lg rounded-tr-lg rounded-br-lg p-4 shadow-sm">
-                                    <ResponseManager message={displayedMessage} />
-                                    <span className="animate-pulse ml-1">▍</span>
+                                    <ResponseManager
+                                        message={displayedMessage}
+                                        streaming={true}
+                                    />
                                 </div>
                             </div>
                         )}
@@ -334,78 +414,199 @@ export default function BuildWithAI() {
     );
 }
 
+function autoCloseMarkdown(markdown: string): string {
+    // Handle code blocks - detect unbalanced backticks
+    const codeBlockMatches = markdown.match(/```/g);
+    if (codeBlockMatches && codeBlockMatches.length % 2 !== 0) {
+        markdown = markdown + '\n```';
+    }
 
-export const ResponseManager = ({ message }: { message: string }) => {
+    // Ensure proper paragraph breaks
+    // Look for sentences that end without proper paragraph separation
+    markdown = markdown
+        // Add proper paragraph breaks after sentences ending with periods, question marks, or exclamation points
+        // followed by a newline but not an empty line
+        .replace(/([.!?])\n(?!\n)(?![-*#>]|\d+\.|\s*```|\s*\|)/g, '$1\n\n')
+        // Ensure proper spacing before headers
+        .replace(/\n(#{1,6}\s)/g, '\n\n$1');
+
+    // Handle tables - check for incomplete tables
+    const tableRows = markdown.match(/\|.*\|/g);
+    if (tableRows && tableRows.length >= 1) {
+        // Check if table header separator row exists
+        const headerSeparator = markdown.match(/\|(\s*:?-+:?\s*\|)+/);
+        if (!headerSeparator) {
+            // Insert a dummy header separator after first row
+            const firstRowIndex = markdown.indexOf(tableRows[0]) + tableRows[0].length;
+            const columnCount = (tableRows[0].match(/\|/g) || []).length - 1;
+            const separator = '\n|' + ' --- |'.repeat(columnCount);
+            markdown = markdown.slice(0, firstRowIndex) + separator + markdown.slice(firstRowIndex);
+        }
+    }
+
+    // Handle incomplete lists (ensure proper spacing)
+    markdown = markdown
+        // Add space after list items if missing
+        .replace(/(\n[*-] .+)(\n[^*-\s\n])/g, '$1\n\n$2')
+        // Handle numbered lists - ensure proper spacing after list items
+        .replace(/(\n\d+\. .+)(\n[^\d\s\n])/g, '$1\n\n$2')
+        // Ensure proper spacing between list items and following paragraphs
+        .replace(/(\n[*-] .+\n)(?=[^\s*-])/g, '$1\n');
+
+    // Balance parentheses in links
+    const linkMatches = markdown.match(/\[([^\]]+)\]\(/g);
+    if (linkMatches) {
+        for (const match of linkMatches) {
+            const startIndex = markdown.indexOf(match) + match.length;
+            const textAfter = markdown.slice(startIndex);
+            if (!textAfter.includes(')')) {
+                // Add closing parenthesis if missing
+                markdown = markdown.slice(0, startIndex) + "url)" + textAfter;
+            }
+        }
+    }
+
+    // Ensure proper spacing after blockquotes
+    markdown = markdown.replace(/(\n>[^\n]+)(\n[^>\n])/g, '$1\n\n$2');
+
+    // Check for unclosed HTML-like tags that markdown might use
+    const commonTags = ['div', 'span', 'p', 'b', 'i', 'strong', 'em'];
+    for (const tag of commonTags) {
+        const openPattern = new RegExp(`<${tag}[^>]*>`, 'g');
+        const closePattern = new RegExp(`</${tag}>`, 'g');
+        const openMatches = (markdown.match(openPattern) || []).length;
+        const closeMatches = (markdown.match(closePattern) || []).length;
+        
+        if (openMatches > closeMatches) {
+            markdown = markdown + `</${tag}>`;
+        }
+    }
+
+    return markdown;
+}
+export const ResponseManager = ({ message, streaming = false }: {
+    message: string;
+    streaming?: boolean;
+}) => {
     const [copy, setCopy] = useState(false);
+    const displayMessage = streaming ? autoCloseMarkdown(message) : message;
 
     return (
         <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             components={{
-                code({ className, children, ...props }) {
-                    // @ts-expect-error
-                    const inline = props.inline;
-                    const match = /language-(\w+)/.exec(className || '');
-                    const codeString = String(children).replace(/\n$/, '');
+                // Headings (bright with subtle weight differentiation)
+                h1: ({ node, ...props }) => (
+                    <h1
+                        className="text-[22px] font-semibold text-gray-100 mt-8 mb-5 pb-2 border-b border-gray-700 leading-tight"
+                        {...props}
+                    />
+                ),
+                h2: ({ node, ...props }) => (
+                    <h2
+                        className="text-[19px] font-medium text-gray-200 mt-7 mb-3 leading-snug"
+                        {...props}
+                    />
+                ),
+                h3: ({ node, ...props }) => (
+                    <h3
+                        className="text-[17px] font-normal text-gray-300 mt-5 mb-2 leading-snug"
+                        {...props}
+                    />
+                ),
 
-                    return !inline && match ? (
-                        <div className="relative my-2 group">
-                            <button
-                                onClick={() => {
-                                    navigator.clipboard.writeText(codeString)
-                                    setCopy(true)
-                                    setTimeout(() => {
-                                        setCopy(false);
-                                    }, 3000);
-                                }}
-                                className="absolute top-2 right-2 z-10 bg-gray-600 text-xs px-2 py-1 rounded block   transition"
-                            >
-                                {copy ? "Copied" : "Copy"}
-                            </button>
-                            <SyntaxHighlighter
-                                style={oneDark}
-                                language={match[1]}
-                                PreTag="div"
-                                className="rounded-md text-sm"
-                            >
-                                {codeString}
-                            </SyntaxHighlighter>
-                        </div>
-                    ) : (
-                        <code
-                            className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded"
-                            {...props}
-                        >
-                            {children}
-                        </code>
-                    );
-                },
-                a: ({ ...props }) => (
-                    <a {...props} className="text-blue-500 underline" />
+                // Paragraphs (high contrast with relaxed line spacing)
+                p: ({ node, ...props }) => (
+                    <p
+                        className="text-gray-200 mb-4 leading-[1.8] text-[15.5px] tracking-wide"
+                        {...props}
+                    />
                 ),
-                p: ({ ...props }) => <p className="mb-2" {...props} />,
-                ul: ({ ...props }) => <ul className="list-disc pl-5 mb-2" {...props} />,
-                ol: ({ ...props }) => <ol className="list-decimal pl-5 mb-2" {...props} />,
 
-                table: ({ children }) => (
-                    <div className="overflow-auto my-4">
-                        <table className="min-w-full border border-gray-300 dark:border-gray-700 text-sm">
-                            {children}
-                        </table>
-                    </div>
+                // Lists (bright text with custom markers)
+                ul: ({ node, ...props }) => (
+                    <ul
+                        className="list-disc pl-5 mb-4 space-y-2 marker:text-gray-400"
+                        {...props}
+                    />
                 ),
-                thead: ({ children }) => <thead className="bg-gray-100 dark:bg-gray-800">{children}</thead>,
-                tbody: ({ children }) => <tbody>{children}</tbody>,
-                tr: ({ children }) => <tr className="border-b border-gray-300 dark:border-gray-700">{children}</tr>,
-                th: ({ children }) => (
-                    <th className="px-4 py-2 text-left font-semibold border border-gray-300 dark:border-gray-700">
-                        {children}
-                    </th>
+                ol: ({ node, ...props }) => (
+                    <ol
+                        className="list-decimal pl-5 mb-4 space-y-2"
+                        {...props}
+                    />
                 ),
-                td: ({ children }) => (
-                    <td className="px-4 py-2 border border-gray-300 dark:border-gray-700">
-                        {children}
-                    </td>
+                li: ({ node, ...props }) => (
+                    <li
+                        className="text-gray-300 text-[15px] leading-relaxed pl-1"
+                        {...props}
+                    />
+                ),
+
+                // Code & Blocks (high contrast with vibrant accents)
+                code: ({ node, ...props }) => (
+                    <code
+                        className="bg-gray-700 px-1.5 py-0.5 rounded text-[14px] font-mono text-blue-200 border border-gray-600"
+                        {...props}
+                    />
+                ),
+                pre: ({ node, ...props }) => (
+                    <pre
+                        className="bg-gray-800 p-4 rounded-lg overflow-x-auto text-[14px] my-3 border border-gray-700"
+                        {...props}
+                    />
+                ),
+
+                // Blockquotes (vibrant contrast version)
+                blockquote: ({ node, ...props }) => (
+                    <blockquote
+                        className="border-l-3 border-blue-400 pl-4 my-4 text-gray-100 bg-gray-800/60 py-3 text-[15px] italic"
+                        {...props}
+                    />
+                ),
+
+                // Tables (bright with clear grid)
+                table: ({ node, ...props }) => (
+                    <table
+                        className="w-full my-4 border-collapse"
+                        {...props}
+                    />
+                ),
+                th: ({ node, ...props }) => (
+                    <th
+                        className="bg-gray-800 p-3 text-left border-b border-gray-600 text-gray-200 font-medium"
+                        {...props}
+                    />
+                ),
+                td: ({ node, ...props }) => (
+                    <td
+                        className="p-3 border-b border-gray-700 text-gray-300"
+                        {...props}
+                    />
+                ),
+
+                // Horizontal Rule (visible but not harsh)
+                hr: ({ node, ...props }) => (
+                    <hr
+                        className="my-6 border-t border-gray-700"
+                        {...props}
+                    />
+                ),
+
+                // Special highlight for key terms (Claude-style)
+                strong: ({ node, ...props }) => (
+                    <strong
+                        className="font-medium text-gray-100"
+                        {...props}
+                    />
+                ),
+
+                // Links (stand out but not jarring)
+                a: ({ node, ...props }) => (
+                    <a
+                        className="text-blue-400 hover:text-blue-300 underline underline-offset-3"
+                        {...props}
+                    />
                 ),
             }}
         >
