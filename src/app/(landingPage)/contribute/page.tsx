@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Container from '@/components/Layout/Container';
-import AfterLoginHeader from '@/components/Layout/AfterLogin/Dashboard/header';
 import Input, { TextArea } from '@/components/Common/Input';
 import { Notification } from '@/components/Common/notification';
 
@@ -70,7 +69,7 @@ const ContributePage = () => {
 
     return (
         <>
-            <AfterLoginHeader render={false} />
+            {/* <AfterLoginHeader render={false} /> */}
             <Container className="min-h-screen p-10 w-full mt-24 text-center flex flex-col items-center">
                 <div className="fixed top-5 right-5 z-50">
                     <Notification
