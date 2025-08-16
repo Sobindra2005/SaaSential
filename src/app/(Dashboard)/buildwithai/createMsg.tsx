@@ -2,7 +2,6 @@ import React, { FormEvent, ReactNode } from 'react';
 import Button from '@/components/Common/Buttons';
 import { ComboBox, XlTextArea } from '@/components/Common/Input';
 import List from '@/components/Common/list';
-import { useSession } from 'next-auth/react';
 import { Bot, Send } from 'lucide-react';
 import { FaCode, FaLightbulb, FaSearch, FaToolbox } from 'react-icons/fa';
 

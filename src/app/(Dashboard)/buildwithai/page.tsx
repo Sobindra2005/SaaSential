@@ -10,13 +10,20 @@ import { useSession } from 'next-auth/react';
 import SendBox, { CreateMsgComponent } from './createMsg';
 import { Notification } from '@/components/Common/notification';
 import ReactMarkdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Lottie from "lottie-react";
 import loadingAnimation from "@/assets/animations/loading.json";
 import textLoading from "@/assets/animations/textLoading.json";
 import { useChatContext } from '../chatContext';
 import remarkGfm from 'remark-gfm';
+
+interface response {
+    _id: string;
+    message: string;
+    senderId: string;
+    chatId: string;
+    createdAt: string;
+    updatedAt: string;
+}
 
 const fetchMessages = async (chatId: string) => {
     const response = await api.get(`/api/chat/message?chatId=${chatId}`);
@@ -30,12 +37,12 @@ const fetchChatHistory = async () => {
 
 const createChatApi = async (chatHeadClue: string) => {
     const response = await api.post('/api/chat', { chatHeadClue });
-    return response.data;
+    return response.data as response;
 }
 
 const createMsgApi = async ({ message, senderId, chatId }: { message: string; senderId: string; chatId: string; }) => {
     const response = await api.post('/api/chat/message', { message, senderId, chatId });
-    return response.data;
+    return response.data as response[];
 }
 
 const messgaeAi = async (
@@ -54,7 +61,7 @@ const messgaeAi = async (
 
     let responseText = '';
     let buffer = '';
-    let markdownContext = {
+    const markdownContext = {
         inCodeBlock: false,
         inTable: false,
         inList: false,
@@ -67,13 +74,13 @@ const messgaeAi = async (
         buffer += decoder.decode(value, { stream: true });
 
         // Process all complete lines
-        let lines = buffer.split('\n');
+        const lines = buffer.split('\n');
         buffer = lines.pop() || ''; // Save incomplete line for next chunk
 
-        for (let line of lines) {
+        for (const line of lines) {
             if (line.startsWith('data: ')) {
                 const text = line.replace('data: ', '');
-                
+
                 // Update markdown context based on the content
                 if (text.includes('```')) {
                     markdownContext.inCodeBlock = !markdownContext.inCodeBlock;
@@ -85,7 +92,7 @@ const messgaeAi = async (
                 }
                 if (text.includes('|')) markdownContext.inTable = true;
                 if (text.match(/^[*-] /) || text.match(/^\d+\. /)) markdownContext.inList = true;
-                
+
                 responseText += text;
                 if (onStream) onStream(responseText);
             }
@@ -122,7 +129,7 @@ export default function BuildWithAI() {
     const AiReponse = useMutation({
         mutationFn: (params: { chatId: string; prompt: string; tool: string }) =>
             messgaeAi(params, (text) => setStreamingMessage(text)),
-        onSuccess: (data) => {
+        onSuccess: () => {
             setStreamingMessage('');
             queryClient.invalidateQueries({ queryKey: ['messages'] });
             setIsLoading(false);
@@ -134,7 +141,7 @@ export default function BuildWithAI() {
     });
     const createMsg = useMutation({
         mutationFn: createMsgApi,
-        onSuccess: (data: any) => {
+        onSuccess: (data: response[]) => {
             setInput('');
             queryClient.invalidateQueries({ queryKey: ['messages'] });
             setTimeout(() => {
@@ -150,7 +157,7 @@ export default function BuildWithAI() {
 
     const createChat = useMutation({
         mutationFn: createChatApi,
-        onSuccess: (data: any) => {
+        onSuccess: (data: response) => {
             setNotification({
                 visible: true,
                 message: 'new chat created successfully',
@@ -217,101 +224,96 @@ export default function BuildWithAI() {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages, streamingMessage, isLoading]);
 
-useEffect(() => {
-    if (!streamingMessage) {
-        setDisplayedMessage('');
-        return;
-    }
-
-    // Skip if already caught up
-    if (displayedMessage === streamingMessage) return;
-
-    let rafId: number;
-    let lastTs = performance.now();
-    let currentIndex = displayedMessage.length;
-
-    const CHARS_PER_SECOND = 5000; // Increase for faster typing
-    const CATCHUP_FACTOR = 0.25;   // How fast to catch up when far behind
-    const MAX_CHARS_PER_FRAME = 200; // Safety limit
-
-    // Detect markdown boundaries - add paragraph breaks
-    const mdBoundaries = [
-        // Code blocks
-        {...streamingMessage.matchAll(/```/g)},
-        // Headers
-        {...streamingMessage.matchAll(/^#{1,6}\s/gm)},
-        // List items
-        {...streamingMessage.matchAll(/^[*-]\s/gm)},
-        // Numbered list items
-        {...streamingMessage.matchAll(/^\d+\.\s/gm)},
-        // Table rows
-        {...streamingMessage.matchAll(/\|.*\|/g)},
-        // Paragraph breaks (double newlines)
-        {...streamingMessage.matchAll(/\n\n/g)},
-        // Sentence endings that should create paragraph breaks
-        {...streamingMessage.matchAll(/[.!?]\s/g)},
-        // Blockquotes
-        {...streamingMessage.matchAll(/^>/gm)},
-    ].flat().map(match => match.index).filter(Boolean).sort((a, b) => a - b);
-
-    const animateTyping = (timestamp: number) => {
-        const elapsed = timestamp - lastTs;
-        lastTs = timestamp;
-
-        // Calculate how many characters to reveal this frame
-        const remaining = streamingMessage.length - currentIndex;
-
-        if (remaining <= 0) {
-            setDisplayedMessage(streamingMessage);
+    useEffect(() => {
+        if (!streamingMessage) {
+            setDisplayedMessage('');
             return;
         }
 
-        // Add more characters at once when we're further behind
-        let charsToAdd = Math.ceil((elapsed / 1000) * CHARS_PER_SECOND) +
-            Math.floor(remaining * CATCHUP_FACTOR);
+        // Skip if already caught up
+        if (displayedMessage === streamingMessage) return;
 
-        // Cap to avoid huge jumps
-        charsToAdd = Math.min(charsToAdd, MAX_CHARS_PER_FRAME, remaining);
+        let rafId: number;
+        let lastTs = performance.now();
+        let currentIndex = displayedMessage.length;
 
-        // Snap to markdown boundaries when possible
-        let nextIndex = currentIndex + charsToAdd;
-        
-        // Find the nearest boundary, prioritizing sentence/paragraph breaks
-        const nearestBoundary = mdBoundaries.find(idx => idx > currentIndex && idx <= nextIndex);
-        if (nearestBoundary) {
-            nextIndex = nearestBoundary;
-            
-            // If we're at a sentence ending, add extra characters to include the next few words
-            // This makes the text flow more naturally
-            if (streamingMessage[nearestBoundary-1]?.match(/[.!?]/)) {
-                const nextSpace = streamingMessage.indexOf(' ', nearestBoundary + 1);
-                if (nextSpace > 0 && nextSpace <= nextIndex + 15) { // Look ahead up to 15 chars
-                    nextIndex = nextSpace;
+        const CHARS_PER_SECOND = 5000; // Increase for faster typing
+        const CATCHUP_FACTOR = 0.25;   // How fast to catch up when far behind
+        const MAX_CHARS_PER_FRAME = 200; // Safety limit
+
+        // Detect markdown boundaries - add paragraph breaks
+        const mdBoundaries = [
+            ...streamingMessage.matchAll(/```/g),
+            ...streamingMessage.matchAll(/^#{1,6}\s/gm),
+            ...streamingMessage.matchAll(/^[*-]\s/gm),
+            ...streamingMessage.matchAll(/^\d+\.\s/gm),
+            ...streamingMessage.matchAll(/\|.*\|/g),
+            ...streamingMessage.matchAll(/\n\n/g),
+            ...streamingMessage.matchAll(/[.!?]\s/g),
+            ...streamingMessage.matchAll(/^>/gm),
+        ]
+            .map(match => match.index)
+            .filter((idx): idx is number => typeof idx === 'number')
+            .sort((a, b) => a - b);
+
+        const animateTyping = (timestamp: number) => {
+            const elapsed = timestamp - lastTs;
+            lastTs = timestamp;
+
+            // Calculate how many characters to reveal this frame
+            const remaining = streamingMessage.length - currentIndex;
+
+            if (remaining <= 0) {
+                setDisplayedMessage(streamingMessage);
+                return;
+            }
+
+            // Add more characters at once when we're further behind
+            let charsToAdd = Math.ceil((elapsed / 1000) * CHARS_PER_SECOND) +
+                Math.floor(remaining * CATCHUP_FACTOR);
+
+            // Cap to avoid huge jumps
+            charsToAdd = Math.min(charsToAdd, MAX_CHARS_PER_FRAME, remaining);
+
+            // Snap to markdown boundaries when possible
+            let nextIndex = currentIndex + charsToAdd;
+
+            // Find the nearest boundary, prioritizing sentence/paragraph breaks
+            const nearestBoundary = mdBoundaries.find(idx => idx > currentIndex && idx <= nextIndex);
+            if (nearestBoundary !== undefined) {
+                nextIndex = nearestBoundary;
+
+                // If we're at a sentence ending, add extra characters to include the next few words
+                // This makes the text flow more naturally
+                if (streamingMessage[nearestBoundary - 1]?.match(/[.!?]/)) {
+                    const nextSpace = streamingMessage.indexOf(' ', nearestBoundary + 1);
+                    if (nextSpace > 0 && nextSpace <= nextIndex + 15) { // Look ahead up to 15 chars
+                        nextIndex = nextSpace;
+                    }
                 }
             }
-        }
 
-        // Update the displayed text
-        currentIndex = nextIndex;
-        setDisplayedMessage(autoCloseMarkdown(streamingMessage.substring(0, currentIndex)));
+            // Update the displayed text
+            currentIndex = nextIndex;
+            setDisplayedMessage(autoCloseMarkdown(streamingMessage.substring(0, currentIndex)));
 
-        // Continue animation if not done
-        if (currentIndex < streamingMessage.length) {
-            rafId = requestAnimationFrame(animateTyping);
-        }
-    };
+            // Continue animation if not done
+            if (currentIndex < streamingMessage.length) {
+                rafId = requestAnimationFrame(animateTyping);
+            }
+        };
 
-    rafId = requestAnimationFrame(animateTyping);
-    return () => cancelAnimationFrame(rafId);
-}, [streamingMessage]);
+        rafId = requestAnimationFrame(animateTyping);
+        return () => cancelAnimationFrame(rafId);
+    }, [streamingMessage, displayedMessage]);
     useEffect(() => {
         if (
             isSuccessChatHistory &&
-            (!currentChatId || !(chatHistory as IMessage[])?.some((c: any) => c._id === currentChatId))
+            (!currentChatId || !(chatHistory as IMessage[])?.some((c: IMessage) => c._id === currentChatId))
         ) {
             changeCurrentChatId((chatHistory as IMessage[])?.[0]?._id as string || null);
         }
-    }, [chatHistory, isSuccessChatHistory]);
+    }, [chatHistory, isSuccessChatHistory, currentChatId, changeCurrentChatId]);
 
     const handleCloseNotification = () => {
         setNotification(prev => ({ ...prev, visible: false }));
@@ -366,7 +368,7 @@ useEffect(() => {
                                 <div className="max-w-[80%] text-gray-100 rounded-tl-lg rounded-tr-lg rounded-br-lg p-4 shadow-sm">
                                     <ResponseManager
                                         message={displayedMessage}
-                                        streaming={true}
+                                      
                                     />
                                 </div>
                             </div>
@@ -476,7 +478,7 @@ function autoCloseMarkdown(markdown: string): string {
         const closePattern = new RegExp(`</${tag}>`, 'g');
         const openMatches = (markdown.match(openPattern) || []).length;
         const closeMatches = (markdown.match(closePattern) || []).length;
-        
+
         if (openMatches > closeMatches) {
             markdown = markdown + `</${tag}>`;
         }
@@ -484,31 +486,29 @@ function autoCloseMarkdown(markdown: string): string {
 
     return markdown;
 }
-export const ResponseManager = ({ message, streaming = false }: {
+function ResponseManager({ message}: {
     message: string;
-    streaming?: boolean;
-}) => {
-    const [copy, setCopy] = useState(false);
-    const displayMessage = streaming ? autoCloseMarkdown(message) : message;
+}) {
+
 
     return (
         <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             components={{
                 // Headings (bright with subtle weight differentiation)
-                h1: ({ node, ...props }) => (
+                h1: ({ ...props }) => (
                     <h1
                         className="text-[22px] font-semibold text-gray-100 mt-8 mb-5 pb-2 border-b border-gray-700 leading-tight"
                         {...props}
                     />
                 ),
-                h2: ({ node, ...props }) => (
+                h2: ({ ...props }) => (
                     <h2
                         className="text-[19px] font-medium text-gray-200 mt-7 mb-3 leading-snug"
                         {...props}
                     />
                 ),
-                h3: ({ node, ...props }) => (
+                h3: ({ ...props }) => (
                     <h3
                         className="text-[17px] font-normal text-gray-300 mt-5 mb-2 leading-snug"
                         {...props}
@@ -516,7 +516,7 @@ export const ResponseManager = ({ message, streaming = false }: {
                 ),
 
                 // Paragraphs (high contrast with relaxed line spacing)
-                p: ({ node, ...props }) => (
+                p: ({ ...props }) => (
                     <p
                         className="text-gray-200 mb-4 leading-[1.8] text-[15.5px] tracking-wide"
                         {...props}
@@ -524,19 +524,19 @@ export const ResponseManager = ({ message, streaming = false }: {
                 ),
 
                 // Lists (bright text with custom markers)
-                ul: ({ node, ...props }) => (
+                ul: ({ ...props }) => (
                     <ul
                         className="list-disc pl-5 mb-4 space-y-2 marker:text-gray-400"
                         {...props}
                     />
                 ),
-                ol: ({ node, ...props }) => (
+                ol: ({ ...props }) => (
                     <ol
                         className="list-decimal pl-5 mb-4 space-y-2"
                         {...props}
                     />
                 ),
-                li: ({ node, ...props }) => (
+                li: ({ ...props }) => (
                     <li
                         className="text-gray-300 text-[15px] leading-relaxed pl-1"
                         {...props}
@@ -544,13 +544,13 @@ export const ResponseManager = ({ message, streaming = false }: {
                 ),
 
                 // Code & Blocks (high contrast with vibrant accents)
-                code: ({ node, ...props }) => (
+                code: ({ ...props }) => (
                     <code
                         className="bg-gray-700 px-1.5 py-0.5 rounded text-[14px] font-mono text-blue-200 border border-gray-600"
                         {...props}
                     />
                 ),
-                pre: ({ node, ...props }) => (
+                pre: ({ ...props }) => (
                     <pre
                         className="bg-gray-800 p-4 rounded-lg overflow-x-auto text-[14px] my-3 border border-gray-700"
                         {...props}
@@ -558,7 +558,7 @@ export const ResponseManager = ({ message, streaming = false }: {
                 ),
 
                 // Blockquotes (vibrant contrast version)
-                blockquote: ({ node, ...props }) => (
+                blockquote: ({ ...props }) => (
                     <blockquote
                         className="border-l-3 border-blue-400 pl-4 my-4 text-gray-100 bg-gray-800/60 py-3 text-[15px] italic"
                         {...props}
@@ -566,19 +566,19 @@ export const ResponseManager = ({ message, streaming = false }: {
                 ),
 
                 // Tables (bright with clear grid)
-                table: ({ node, ...props }) => (
+                table: ({ ...props }) => (
                     <table
                         className="w-full my-4 border-collapse"
                         {...props}
                     />
                 ),
-                th: ({ node, ...props }) => (
+                th: ({ ...props }) => (
                     <th
                         className="bg-gray-800 p-3 text-left border-b border-gray-600 text-gray-200 font-medium"
                         {...props}
                     />
                 ),
-                td: ({ node, ...props }) => (
+                td: ({ ...props }) => (
                     <td
                         className="p-3 border-b border-gray-700 text-gray-300"
                         {...props}
@@ -586,7 +586,7 @@ export const ResponseManager = ({ message, streaming = false }: {
                 ),
 
                 // Horizontal Rule (visible but not harsh)
-                hr: ({ node, ...props }) => (
+                hr: ({ ...props }) => (
                     <hr
                         className="my-6 border-t border-gray-700"
                         {...props}
@@ -594,7 +594,7 @@ export const ResponseManager = ({ message, streaming = false }: {
                 ),
 
                 // Special highlight for key terms (Claude-style)
-                strong: ({ node, ...props }) => (
+                strong: ({ ...props }) => (
                     <strong
                         className="font-medium text-gray-100"
                         {...props}
@@ -602,7 +602,7 @@ export const ResponseManager = ({ message, streaming = false }: {
                 ),
 
                 // Links (stand out but not jarring)
-                a: ({ node, ...props }) => (
+                a: ({ ...props }) => (
                     <a
                         className="text-blue-400 hover:text-blue-300 underline underline-offset-3"
                         {...props}

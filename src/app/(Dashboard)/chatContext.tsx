@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, ReactNode } from "react";
 
 interface ChatContextType {
     newChat: boolean;
@@ -35,3 +35,29 @@ export const useChatContext = () => {
     }
     return context;
 }
+
+
+type OnCreateContextType = {
+    onCreate: () => void;
+    setOnCreate: (fn: () => void) => void;
+};
+
+const OnCreateContext = createContext<OnCreateContextType | undefined>(undefined);
+
+export const OnCreateProvider = ({ children }: { children: ReactNode }) => {
+    const [onCreate, setOnCreate] = useState<() => void>(() => () => {});
+
+    return (
+        <OnCreateContext.Provider value={{ onCreate, setOnCreate }}>
+            {children}
+        </OnCreateContext.Provider>
+    );
+};
+
+export const useOnCreate = () => {
+    const context = useContext(OnCreateContext);
+    if (!context) {
+        throw new Error('useOnCreate must be used within an OnCreateProvider');
+    }
+    return context;
+};

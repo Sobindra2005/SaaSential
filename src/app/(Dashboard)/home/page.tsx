@@ -1,9 +1,8 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Container from '@/components/Layout/Container';
 import ProjectCard from '@/components/ui/cards/projectCrad';
 import ProjectWizard from '@/components/forms/CreateProject';
-import AfterLoginHeader from '../../../components/Layout/AfterLogin/Dashboard/header';
 import { AnimatePresence } from 'framer-motion';
 import { Notification } from '@/components/Common/notification';
 import { useRouter } from 'next/navigation';
@@ -11,6 +10,8 @@ import { motion } from 'framer-motion';
 import { api } from '@/utils/api';
 import { useQuery } from '@tanstack/react-query';
 import { DivFetchIndicator } from '@/components/Common/loading/divFetchingIndicator';
+import { useOnCreate } from '../chatContext';
+
 
 interface Project {
     _id: string;
@@ -27,7 +28,9 @@ const Home: React.FC = () => {
     const [showWizard, setShowWizard] = useState(false);
     const [notification, setNotification] = useState({ visible: false });
     const router = useRouter();
-    
+    const { setOnCreate } = useOnCreate();
+
+
     const handleCreateProject = async (projectData: { template: string, name: string; templateDesign: string; templateId: string | null; description: string }) => {
         try {
             const response = await fetch(`/api/userProjects?type=${projectData.templateDesign}&&template=${projectData.template}`, {
@@ -50,7 +53,7 @@ const Home: React.FC = () => {
             }
 
             const newProject = await response.json();
-            
+
             setNotification({ visible: true });
             setShowWizard(false);
 
@@ -72,6 +75,14 @@ const Home: React.FC = () => {
         queryKey: ['project'],
         queryFn: fetchProjects
     })
+
+    useEffect(() => {
+        setOnCreate(() => {
+            setShowWizard(true)
+        });
+
+        return () => setOnCreate(() => { });
+    }, [setOnCreate]);
 
     return (
         <>
