@@ -191,3 +191,17 @@ body {
   font-size: 6px;
 }
 
+.markdown-stream.streaming {
+  position: relative;
+  display: inline-block;
+}
+.markdown-stream.streaming:after {
+  content: "▍";
+  display: inline;
+  margin-left: 1px;
+  animation: blink 1s steps(2) infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}

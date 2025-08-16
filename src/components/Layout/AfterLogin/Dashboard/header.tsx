@@ -1,3 +1,4 @@
+"use client"
 import React from 'react';
 import { FaPlus, FaCog, FaSignOutAlt } from 'react-icons/fa';
 import Container from "../../Container";
@@ -12,11 +13,10 @@ interface props {
 
 const AfterLoginHeader: React.FC<props> = ({ onCreate, render = true }) => {
     return (
-        <Container className='flex py-4 items-center z-10 justify-between border-b bg-primary border-border fixed top-0 w-full '>
+        <Container className='flex py-4 items-center z-10 justify-between border-b border-gray-800 bg-primary sticky top-0 right-0 w-full '>
             <div>
                 <Logo />
             </div>
-          
                 {render ?
                     <div  className='flex items-center gap-10'>
                         <Button onClick={onCreate}   ButtonType='secondary' className='flex items-center gap-2 '>

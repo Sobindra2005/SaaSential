@@ -75,13 +75,12 @@ const Home: React.FC = () => {
 
     return (
         <>
-            <AfterLoginHeader onCreate={() => setShowWizard(true)} />
             {isFetching ?
-                <Container className='p-10 w-full   ml-24'>
+                <Container className='p-10 w-full ml-24'>
                     <DivFetchIndicator />
                 </Container>
                 :
-                <Container className={`${(data?.data as Project[]).length === 0 ? '' : 'min-h-screen'} p-10 w-full mt-24 ml-16  md:ml-24 `}>
+                <Container className={`${(data?.data as Project[]).length === 0 ? '' : 'min-h-screen'} p-10 w-full ml-16 md:ml-24 `}>
                     <div className="fixed top-5 right-5 z-50">
                         <Notification
                             type={'success'}

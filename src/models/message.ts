@@ -1,7 +1,7 @@
-import { Schema, model, Document } from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IMessage extends Document {
-    userId: Schema.Types.ObjectId;
+    userId: string;
     chatId: Schema.Types.ObjectId;
     message: string;
     date: Date;
@@ -10,7 +10,7 @@ export interface IMessage extends Document {
 }
 
 const messageSchema = new Schema<IMessage>({
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    userId: { type: String, ref: 'User', required: true },
     chatId: { type: Schema.Types.ObjectId, ref: 'ChatHistory', required: true },
     senderId: { type: Schema.Types.Mixed, ref: 'User', required: true },
     message: { type: String, required: true },
@@ -18,4 +18,4 @@ const messageSchema = new Schema<IMessage>({
     time: { type: String, required: true },
 });
 
-export const Message = model<IMessage>('Message', messageSchema);
+export const Message =mongoose.models.Message ||  mongoose.model('Message', messageSchema);

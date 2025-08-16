@@ -50,7 +50,6 @@ const TemplatePage = () => {
 
     return (
         <>
-            <AfterLoginHeader render={false} />
             <TemplateContainer isFetching={isFetching} slug={slug} templates={data?.data as TemplateData[]} selectedTemplate={selectedTemplate} handleTemplateClick={handleTemplateClick} handleSelectButtonClick={handleSelectButtonClick} />
         </>
     );

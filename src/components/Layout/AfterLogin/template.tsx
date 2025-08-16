@@ -53,7 +53,7 @@ export const TemplateContainer: React.FC<templatePage> = ({ slug, templates, sel
     }
     else return (
         <>
-            <Container className="min-h-screen p-10 w-full mt-24 ml-16  md:ml-24  text-center flex flex-col items-center">
+            <Container className="min-h-screen p-10 w-full ml-16  md:ml-24  text-center flex flex-col items-center">
 
                 <HeaderPart slug={slug} />
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 w-full mt-24 capitalize">
