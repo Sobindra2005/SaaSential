@@ -1,7 +1,8 @@
 import React from 'react';
 import Sidebar from "../../components/Layout/AfterLogin/Dashboard/sidebar"
-import { CreateChatContextProvider, OnCreateProvider } from './chatContext';
+import { CreateChatContextProvider, OnCreateProvider } from './contextProvider';
 import AfterLoginHeader from '@/components/Layout/AfterLogin/Dashboard/header';
+import { HeaderWrapper } from './headerWrapper';
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -12,13 +13,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div className="flex flex-col min-h-screen">
             <CreateChatContextProvider>
                 <OnCreateProvider>
-                    <AfterLoginHeader />
-                    <div className='flex'>
-                        <Sidebar />
-                        <div className="flex-grow  flex min-h-full ">
-                            {children}
+                    <HeaderWrapper>
+                        <div className='flex'>
+                            <Sidebar />
+                            <div className="flex-grow  flex min-h-full ">
+                                {children}
+                            </div>
                         </div>
-                    </div>
+                    </HeaderWrapper>
                 </OnCreateProvider>
             </CreateChatContextProvider>
         </div>
@@ -26,3 +28,5 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 };
 
 export default Layout;
+
+

@@ -13,7 +13,7 @@ import ReactMarkdown from 'react-markdown';
 import Lottie from "lottie-react";
 import loadingAnimation from "@/assets/animations/loading.json";
 import textLoading from "@/assets/animations/textLoading.json";
-import { useChatContext } from '../chatContext';
+import { useChatContext } from '../contextProvider';
 import remarkGfm from 'remark-gfm';
 
 interface response {

@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Container from '@/components/Layout/Container';
 import ProjectCard from '@/components/ui/cards/projectCrad';
 import ProjectWizard from '@/components/forms/CreateProject';
@@ -10,8 +10,7 @@ import { motion } from 'framer-motion';
 import { api } from '@/utils/api';
 import { useQuery } from '@tanstack/react-query';
 import { DivFetchIndicator } from '@/components/Common/loading/divFetchingIndicator';
-import { useOnCreate } from '../chatContext';
-
+import { useOnCreate } from '../contextProvider';
 
 interface Project {
     _id: string;
@@ -76,13 +75,15 @@ const Home: React.FC = () => {
         queryFn: fetchProjects
     })
 
-    useEffect(() => {
-        setOnCreate(() => {
-            setShowWizard(true)
-        });
 
-        return () => setOnCreate(() => { });
-    }, [setOnCreate]);
+    const handleButtonClick = useCallback(() => {
+        setShowWizard(true)
+    }, []);
+
+    // Set the onCreate function when the component mounts
+    useEffect(() => {
+        setOnCreate(() => handleButtonClick);
+    }, [setOnCreate, handleButtonClick]);
 
     return (
         <>
