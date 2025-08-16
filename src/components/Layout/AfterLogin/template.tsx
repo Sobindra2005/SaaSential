@@ -44,7 +44,7 @@ export const TemplateContainer: React.FC<templatePage> = ({ slug, templates, sel
     if (isFetching) {
         return (
             <>
-                <Container className="min-h-screen p-10 w-full mt-24 ml-24 text-center flex flex-col items-center">
+                <Container className="min-h-screen p-10 w-full  ml-24 text-center flex flex-col items-center">
                     <HeaderPart slug={slug} />
                     <DivFetchIndicator />
                 </Container>

@@ -1,7 +1,6 @@
 import React from 'react';
 import Sidebar from "../../components/Layout/AfterLogin/Dashboard/sidebar"
 import { CreateChatContextProvider, OnCreateProvider } from './contextProvider';
-import AfterLoginHeader from '@/components/Layout/AfterLogin/Dashboard/header';
 import { HeaderWrapper } from './headerWrapper';
 
 interface LayoutProps {
