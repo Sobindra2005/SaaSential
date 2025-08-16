@@ -25,7 +25,13 @@ export const List = React.forwardRef<HTMLDivElement, ListProps>(
         >
             <ul>
                 {items.map((item, idx) => (
-                    <li key={idx} onClick={() => onSelect?.(item.name)} className={`flex gap-2 items-center py-2 px-2 ${defaultValue == item.name && 'bg-blue-900'} hover:bg-blue-900 cursor-pointer`}>
+                    <li
+                        key={idx}
+                        onClick={() => onSelect?.(item.name)}
+                        className={`flex gap-2 items-center py-2 px-2 ${
+                            defaultValue == item.name && "bg-blue-900"
+                        } hover:bg-blue-900 cursor-pointer`}
+                    >
                         <span className="text-blue-300">{item.icon}</span> {item.name}
                     </li>
                 ))}
@@ -33,5 +39,7 @@ export const List = React.forwardRef<HTMLDivElement, ListProps>(
         </motion.div>
     )
 );
+
+List.displayName = "List";
 
 export default List;
