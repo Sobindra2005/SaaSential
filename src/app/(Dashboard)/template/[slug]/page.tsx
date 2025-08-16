@@ -1,6 +1,5 @@
 "use client"
 import React, { useState } from 'react';
-import AfterLoginHeader from '@/components/Layout/AfterLogin/Dashboard/header';
 import { useRouter } from 'next/navigation';
 import { useParams, useSearchParams } from 'next/navigation';
 import { TemplateContainer } from '@/components/Layout/AfterLogin/template';
@@ -77,7 +76,6 @@ const TemplatePage = () => {
 
     return (
         <>
-            <AfterLoginHeader render={false} />
             <TemplateContainer isFetching={isFetching} slug={slug} templates={data?.data as TemplateData[]} selectedTemplate={selectedTemplate} handleTemplateClick={handleTemplateClick} handleSelectButtonClick={handleSelectButtonClick} />
         </>
     );
