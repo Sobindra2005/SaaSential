@@ -5,7 +5,7 @@ import { Blocks, PanelLeftOpen, PanelRightOpen, Workflow, BrainCog, PenBoxIcon, 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
-import { useChatContext } from '@/app/(Dashboard)/chatContext';
+import { useChatContext } from '@/app/(Dashboard)/contextProvider';
 
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);

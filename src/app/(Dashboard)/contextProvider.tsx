@@ -45,7 +45,7 @@ type OnCreateContextType = {
 const OnCreateContext = createContext<OnCreateContextType | undefined>(undefined);
 
 export const OnCreateProvider = ({ children }: { children: ReactNode }) => {
-    const [onCreate, setOnCreate] = useState<() => void>(() => () => {});
+    const [onCreate, setOnCreate] = useState<() => void>(() => {});
 
     return (
         <OnCreateContext.Provider value={{ onCreate, setOnCreate }}>
