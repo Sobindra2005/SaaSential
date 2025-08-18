@@ -30,17 +30,17 @@ const Sidebar = () => {
 
     return (
         <motion.div
-            className={`text-white border-r ${isBuildWithAiPage ? 'bg-primary' : 'bg-primary'} z-50 border-gray-800 h-screen fixed  overflow-hidden`}
+            className={`text-white  ${isBuildWithAiPage && !isOpen ? 'bg-transparent sm:bg-primary sm:border-r' : 'bg-primary border-r'} z-50 border-gray-800 h-screen fixed  overflow-hidden`}
             animate={{ width: isOpen ? 200 : 60 }}
             transition={{ duration: 0.2 }}
         >
-            <div className="flex items-center justify-between text-xl font-bold border-b border-gray-800 p-4 gap-8 ">
+            <div className={`flex items-center justify-between text-xl font-bold ${isBuildWithAiPage && !isOpen ? 'sm:border-b' : 'border-b'} border-gray-800 p-4 gap-8 `}>
                 {isOpen && <span className='text-gray-300'>{isBuildWithAiPage ? "Chats" : 'Builder'}</span>} <button onClick={toggleSidebar} className="text-xl">
                     {isOpen ? <PanelRightOpen /> : <PanelLeftOpen />}
                 </button>
             </div>
             <nav className="mt-4 w-full">
-                {isBuildWithAiPage &&
+                {isBuildWithAiPage && isOpen &&
                     <div onClick={() => changeContext(true)} className={`flex gap-3 px-2 pb-5 cursor-pointer w-full  ${isOpen ? '' : 'justify-center'} items-center `}>
                         <PenBoxIcon size={24} />{isOpen && <span className="text-gray-400 hover:text-gray-100 text-md truncate">New chat</span>}
                     </div>

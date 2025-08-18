@@ -333,7 +333,7 @@ export default function BuildWithAI() {
                 />
             </div>
 
-            <div className="flex-grow overflow-y-auto  w-full   relative right-0  p-6 flex items-center justify-center" id="chat-container">
+            <div className="flex-grow overflow-y-auto   w-full   relative right-0 p-1 md:p-6 flex items-center justify-center" id="chat-container">
                 {(newChat || (!Array.isArray(messages) || messages.length === 0)) ? (
                     <CreateMsgComponent
                         isLoading={isLoading}
@@ -347,17 +347,17 @@ export default function BuildWithAI() {
                         onSubmit={handleCreateChat}
                     />
                 ) : (
-                    <div className="max-w-[70%]  w-full h-full space-y-4 overflow">
+                    <div className=" max-w-[100%] md:max-w-[80%]  w-full h-full space-y-4 overflow">
                         {(Array.isArray(messages) ? messages : []).map((message: IMessage, index: number) => (
                             <div
                                 key={index}
                                 className={`flex ${((message.senderId as unknown) as string) === userId ? 'justify-end' : 'justify-start'}`}
                             >
                                 <div
-                                    className={` max-w-[80%]  ${((message.senderId as unknown) as string) === userId
+                                    className={`max-w-[100%] lg:max-w-[85%]  ${((message.senderId as unknown) as string) === userId
                                         ? 'bg-gray-800 text-gray-100 rounded-tl-lg rounded-tr-lg rounded-bl-lg'
                                         : ' text-gray-100 rounded-tl-lg rounded-tr-lg rounded-br-lg'
-                                        } p-4 shadow-sm`}
+                                        } p-1 md:p-4 shadow-sm `}
                                 >
                                     <ResponseManager message={message.message as string} />
                                 </div>
@@ -498,19 +498,19 @@ function ResponseManager({ message}: {
                 // Headings (bright with subtle weight differentiation)
                 h1: ({ ...props }) => (
                     <h1
-                        className="text-[22px] font-semibold text-gray-100 mt-8 mb-5 pb-2 border-b border-gray-700 leading-tight"
+                        className="md:text-[22px] font-semibold text-gray-100 mt-8 mb-5 pb-2 border-b border-gray-700 leading-tight"
                         {...props}
                     />
                 ),
                 h2: ({ ...props }) => (
                     <h2
-                        className="text-[19px] font-medium text-gray-200 mt-7 mb-3 leading-snug"
+                        className="md:text-[19px] font-medium text-gray-200 mt-7 mb-3 leading-snug"
                         {...props}
                     />
                 ),
                 h3: ({ ...props }) => (
                     <h3
-                        className="text-[17px] font-normal text-gray-300 mt-5 mb-2 leading-snug"
+                        className="md:text-[17px] font-normal text-gray-300 mt-5 mb-2 leading-snug"
                         {...props}
                     />
                 ),
@@ -518,7 +518,7 @@ function ResponseManager({ message}: {
                 // Paragraphs (high contrast with relaxed line spacing)
                 p: ({ ...props }) => (
                     <p
-                        className="text-gray-200 mb-4 leading-[1.8] text-[15.5px] tracking-wide"
+                        className="text-gray-200 mb-4 leading-[1.8] md:text-[15.5px] tracking-wide"
                         {...props}
                     />
                 ),
@@ -538,7 +538,7 @@ function ResponseManager({ message}: {
                 ),
                 li: ({ ...props }) => (
                     <li
-                        className="text-gray-300 text-[15px] leading-relaxed pl-1"
+                        className="text-gray-300 md:text-[15px] leading-relaxed pl-1"
                         {...props}
                     />
                 ),
@@ -546,7 +546,7 @@ function ResponseManager({ message}: {
                 // Code & Blocks (high contrast with vibrant accents)
                 code: ({ ...props }) => (
                     <code
-                        className="bg-gray-700 px-1.5 py-0.5 rounded text-[14px] font-mono text-blue-200 border border-gray-600"
+                        className="bg-gray-700 px-1.5 py-0.5 rounded md:text-[14px] font-mono text-blue-200 border border-gray-600"
                         {...props}
                     />
                 ),
