@@ -368,7 +368,7 @@ export default function BuildWithAI() {
                                 <div className="max-w-[80%] text-gray-100 rounded-tl-lg rounded-tr-lg rounded-br-lg p-4 shadow-sm">
                                     <ResponseManager
                                         message={displayedMessage}
-                                      
+
                                     />
                                 </div>
                             </div>
@@ -486,7 +486,7 @@ function autoCloseMarkdown(markdown: string): string {
 
     return markdown;
 }
-function ResponseManager({ message}: {
+function ResponseManager({ message }: {
     message: string;
 }) {
 
@@ -494,121 +494,162 @@ function ResponseManager({ message}: {
     return (
         <ReactMarkdown
             remarkPlugins={[remarkGfm]}
-            components={{
-                // Headings (bright with subtle weight differentiation)
-                h1: ({ ...props }) => (
-                    <h1
-                        className="md:text-[22px] font-semibold text-gray-100 mt-8 mb-5 pb-2 border-b border-gray-700 leading-tight"
-                        {...props}
-                    />
-                ),
-                h2: ({ ...props }) => (
-                    <h2
-                        className="md:text-[19px] font-medium text-gray-200 mt-7 mb-3 leading-snug"
-                        {...props}
-                    />
-                ),
-                h3: ({ ...props }) => (
-                    <h3
-                        className="md:text-[17px] font-normal text-gray-300 mt-5 mb-2 leading-snug"
-                        {...props}
-                    />
-                ),
+components={{
+  // Headings (mobile → desktop scaling)
+  h1: ({ ...props }) => (
+    <h1
+      className="text-[18px] sm:text-[20px] md:text-[22px] font-semibold text-gray-100 mt-6 md:mt-8 mb-4 md:mb-5 pb-2 border-b border-gray-700 leading-snug md:leading-tight"
+      {...props}
+    />
+  ),
+  h2: ({ ...props }) => (
+    <h2
+      className="text-[16px] sm:text-[18px] md:text-[19px] font-medium text-gray-200 mt-5 md:mt-7 mb-3 leading-snug"
+      {...props}
+    />
+  ),
+  h3: ({ ...props }) => (
+    <h3
+      className="text-[15px] sm:text-[16px] md:text-[17px] font-normal text-gray-300 mt-4 md:mt-5 mb-2 leading-snug"
+      {...props}
+    />
+  ),
+  h4: ({ ...props }) => (
+    <h4
+      className="text-[14.5px] sm:text-[15px] md:text-[16px] font-normal text-gray-300 mt-3 md:mt-4 mb-2"
+      {...props}
+    />
+  ),
+  h5: ({ ...props }) => (
+    <h5
+      className="text-[14px] sm:text-[14.5px] md:text-[15px] font-normal text-gray-400 mt-2 md:mt-3 mb-1"
+      {...props}
+    />
+  ),
+  h6: ({ ...props }) => (
+    <h6
+      className="text-[13.5px] sm:text-[14px] md:text-[14.5px] font-light text-gray-500 mt-2 mb-1"
+      {...props}
+    />
+  ),
 
-                // Paragraphs (high contrast with relaxed line spacing)
-                p: ({ ...props }) => (
-                    <p
-                        className="text-gray-200 mb-4 leading-[1.8] md:text-[15.5px] tracking-wide"
-                        {...props}
-                    />
-                ),
+  // Paragraph
+  p: ({ ...props }) => (
+    <p
+      className="text-[14.5px] sm:text-[15px] md:text-[15.5px] text-gray-200 mb-3 md:mb-4 leading-[1.7] md:leading-[1.8] tracking-wide"
+      {...props}
+    />
+  ),
 
-                // Lists (bright text with custom markers)
-                ul: ({ ...props }) => (
-                    <ul
-                        className="list-disc pl-5 mb-4 space-y-2 marker:text-gray-400"
-                        {...props}
-                    />
-                ),
-                ol: ({ ...props }) => (
-                    <ol
-                        className="list-decimal pl-5 mb-4 space-y-2"
-                        {...props}
-                    />
-                ),
-                li: ({ ...props }) => (
-                    <li
-                        className="text-gray-300 md:text-[15px] leading-relaxed pl-1"
-                        {...props}
-                    />
-                ),
+  // Lists
+  ul: ({ ...props }) => (
+    <ul
+      className="list-disc pl-4 md:pl-5 mb-3 md:mb-4 space-y-1.5 md:space-y-2 marker:text-gray-400"
+      {...props}
+    />
+  ),
+  ol: ({ ...props }) => (
+    <ol
+      className="list-decimal pl-4 md:pl-5 mb-3 md:mb-4 space-y-1.5 md:space-y-2"
+      {...props}
+    />
+  ),
+  li: ({ ...props }) => (
+    <li
+      className="text-[14px] sm:text-[14.5px] md:text-[15px] text-gray-300 leading-relaxed pl-1"
+      {...props}
+    />
+  ),
 
-                // Code & Blocks (high contrast with vibrant accents)
-                code: ({ ...props }) => (
-                    <code
-                        className="bg-gray-700 px-1.5 py-0.5 rounded md:text-[14px] font-mono text-blue-200 border border-gray-600"
-                        {...props}
-                    />
-                ),
-                pre: ({ ...props }) => (
-                    <pre
-                        className="bg-gray-800 p-4 rounded-lg overflow-x-auto text-[14px] my-3 border border-gray-700"
-                        {...props}
-                    />
-                ),
+  // Inline & Block Code
+  code: ({ ...props }) => (
+    <code
+      className="bg-gray-700 px-1.5 py-0.5 rounded text-[13px] sm:text-[13.5px] md:text-[14px] font-mono text-blue-200 border border-gray-600"
+      {...props}
+    />
+  ),
+  pre: ({ ...props }) => (
+    <pre
+      className="bg-gray-800 p-3 md:p-4 rounded-lg overflow-x-auto text-[13px] md:text-[14px] my-2 md:my-3 border border-gray-700"
+      {...props}
+    />
+  ),
 
-                // Blockquotes (vibrant contrast version)
-                blockquote: ({ ...props }) => (
-                    <blockquote
-                        className="border-l-3 border-blue-400 pl-4 my-4 text-gray-100 bg-gray-800/60 py-3 text-[15px] italic"
-                        {...props}
-                    />
-                ),
+  // Blockquote
+  blockquote: ({ ...props }) => (
+    <blockquote
+      className="border-l-2 md:border-l-3 border-blue-400 pl-3 md:pl-4 my-3 md:my-4 text-gray-100 bg-gray-800/60 py-2 md:py-3 text-[14px] sm:text-[14.5px] md:text-[15px] italic"
+      {...props}
+    />
+  ),
 
-                // Tables (bright with clear grid)
-                table: ({ ...props }) => (
-                    <table
-                        className="w-full my-4 border-collapse"
-                        {...props}
-                    />
-                ),
-                th: ({ ...props }) => (
-                    <th
-                        className="bg-gray-800 p-3 text-left border-b border-gray-600 text-gray-200 font-medium"
-                        {...props}
-                    />
-                ),
-                td: ({ ...props }) => (
-                    <td
-                        className="p-3 border-b border-gray-700 text-gray-300"
-                        {...props}
-                    />
-                ),
+  // Tables
+  table: ({ ...props }) => (
+    <table
+      className="w-full my-3 md:my-4 border-collapse"
+      {...props}
+    />
+  ),
+  thead: ({ ...props }) => (
+    <thead className="bg-gray-900/50" {...props} />
+  ),
+  tbody: ({ ...props }) => (
+    <tbody className="divide-y divide-gray-700" {...props} />
+  ),
+  tr: ({ ...props }) => (
+    <tr className="hover:bg-gray-800/30" {...props} />
+  ),
+  th: ({ ...props }) => (
+    <th
+      className="bg-gray-800 p-2 md:p-3 text-left border-b border-gray-600 text-gray-200 text-[14px] sm:text-[15px] md:text-[15.5px] font-medium"
+      {...props}
+    />
+  ),
+  td: ({ ...props }) => (
+    <td
+      className="p-2 md:p-3 border-b border-gray-700 text-gray-300 text-[13.5px] sm:text-[14.5px] md:text-[15px]"
+      {...props}
+    />
+  ),
 
-                // Horizontal Rule (visible but not harsh)
-                hr: ({ ...props }) => (
-                    <hr
-                        className="my-6 border-t border-gray-700"
-                        {...props}
-                    />
-                ),
+  // Horizontal Rule
+  hr: ({ ...props }) => (
+    <hr
+      className="my-5 md:my-6 border-t border-gray-700"
+      {...props}
+    />
+  ),
 
-                // Special highlight for key terms (Claude-style)
-                strong: ({ ...props }) => (
-                    <strong
-                        className="font-medium text-gray-100"
-                        {...props}
-                    />
-                ),
+  // Inline Emphasis
+  strong: ({ ...props }) => (
+    <strong className="font-medium text-gray-100" {...props} />
+  ),
+  em: ({ ...props }) => (
+    <em className="italic text-gray-300" {...props} />
+  ),
+  del: ({ ...props }) => (
+    <del className="text-gray-500 line-through" {...props} />
+  ),
 
-                // Links (stand out but not jarring)
-                a: ({ ...props }) => (
-                    <a
-                        className="text-blue-400 hover:text-blue-300 underline underline-offset-3"
-                        {...props}
-                    />
-                ),
-            }}
+  // Links
+  a: ({ ...props }) => (
+    <a
+      className="text-blue-400 hover:text-blue-300 underline underline-offset-2 md:underline-offset-3"
+      {...props}
+    />
+  ),
+
+  // Images
+  img: ({ ...props }) => (
+    <img
+      className="rounded-lg my-3 md:my-4 max-w-full h-auto shadow-md"
+      {...props}
+      alt={props.alt || "Markdown image"}
+    />
+  ),
+}}
+
+
         >
             {message}
         </ReactMarkdown>
