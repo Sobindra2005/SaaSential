@@ -88,8 +88,8 @@ const Home: React.FC = () => {
     return (
         <>
             {isFetching ?
-                <Container className='p-10 w-full ml-24'>
-                    <DivFetchIndicator />
+                <Container className='p-10 w-full ml-16 md:ml-24 '>
+                    <DivFetchIndicator className={'mt-0'} />
                 </Container>
                 :
                 <Container className={`${(data?.data as Project[]).length === 0 ? '' : 'min-h-screen'} p-10 w-full ml-16 md:ml-24 `}>

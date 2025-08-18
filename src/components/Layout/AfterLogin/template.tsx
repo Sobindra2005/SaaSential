@@ -29,7 +29,7 @@ interface templatePage {
 
 const HeaderPart = ({ slug }: { slug: string }) => {
     return (<>
-        <h1 className='text-4xl font-bold text-secondary'>
+        <h1 className='text-3xl md:text-4xl font-bold text-secondary'>
             {slug === 'blog' && 'Create Your Professional Blog'}
             {slug === 'ecommerce' && 'Build Your Online Store'}
             {slug === 'portfolio' && 'Showcase Your Portfolio'}
@@ -46,7 +46,7 @@ export const TemplateContainer: React.FC<templatePage> = ({ slug, templates, sel
             <>
                 <Container className="min-h-screen p-10 w-full  ml-24 text-center flex flex-col items-center">
                     <HeaderPart slug={slug} />
-                    <DivFetchIndicator />
+                    <DivFetchIndicator className={'mt-24'} />
                 </Container>
             </>
         );
