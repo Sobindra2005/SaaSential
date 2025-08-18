@@ -1,8 +1,8 @@
 
-export const DivFetchIndicator = ({}) => {
+export const DivFetchIndicator = ({className}) => {
     return (
-    
-            <div className="grid grid-cols-1 mt-24 sm:grid-cols-2 lg:grid-cols-3 gap-10 w-full capitalize">
+
+            <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 w-full capitalize ${className}`}>
                 {Array.from({ length: 6 }).map((_, i) => (
                     <div
                         key={i}

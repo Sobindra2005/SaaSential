@@ -347,7 +347,7 @@ export default function BuildWithAI() {
                         onSubmit={handleCreateChat}
                     />
                 ) : (
-                    <div className=" max-w-[100%] md:max-w-[80%]  w-full h-full space-y-4 overflow">
+                    <div className=" max-w-[100%] md:max-w-[80%]  w-full min-h-[70vh] space-y-4 overflow">
                         {(Array.isArray(messages) ? messages : []).map((message: IMessage, index: number) => (
                             <div
                                 key={index}

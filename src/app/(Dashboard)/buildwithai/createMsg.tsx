@@ -119,7 +119,7 @@ const SendBox: React.FC<SendBoxProps> = ({
                         items={tools}
                         defaultValue={defaultTool}
                         onSelect={selectTool}
-                        className='absolute top-[-105%] left-[0%] min-w-[10rem]'
+                        className='absolute top-[-105%] -left-[350%] lg:left-[0%] min-w-[10rem]'
                         ref={containerRef}
                     />
                 )}
