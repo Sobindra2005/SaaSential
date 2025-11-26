@@ -96,7 +96,7 @@ const VisualEditor = () => {
     return (
         <>
             <AfterLoginHeader/>
-            <Container padding='0px' className='mt-4 pt-[57px] w-full h-screen'>
+            <Container padding='0px' className=' w-full h-screen'>
                 <GrapesJsStudio
                     style={{ minHeight: "100%" }}
                     onReady={onReady}
